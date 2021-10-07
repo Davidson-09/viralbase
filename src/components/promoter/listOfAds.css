@@ -1,0 +1,25 @@
+@media (min-width: 720px) and (min-height: 1024px){
+
+	.list_of_ads{
+		grid-template-columns: auto auto auto !important;
+		margin-left: 3em !important;
+	}
+
+	.title{
+		margin-left: 11em;
+	}
+
+}
+
+@media (orientation: landscape) {
+
+	.list_of_ads{
+		grid-template-columns: auto auto auto !important;
+		margin-left: 3em !important;
+	}
+
+	.title{
+		margin-left: 11em;
+	}
+
+}

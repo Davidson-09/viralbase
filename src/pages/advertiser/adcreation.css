@@ -1,0 +1,31 @@
+@media (min-width: 720px) and (min-height: 1024px){
+
+	.adcreation_subcontainer{
+		display: inline-block;
+		align-items: center;
+	}
+	
+	.adcreation_form{
+		margin: auto !important;
+		width: 50% !important;
+	}
+
+	.adcreation_container{
+		height: 100% !important;
+	}
+
+}
+
+@media (orientation: landscape){
+
+	.adcreation_subcontainer{
+		display: inline-block;
+		align-items: center;
+	}
+	
+	.adcreation_form{
+		margin: auto !important;
+		width: 50% !important;
+	}
+
+}

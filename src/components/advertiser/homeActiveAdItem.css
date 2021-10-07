@@ -1,0 +1,26 @@
+.homeActiveAdItem_container{
+	display: flex;
+	justify-content: space-between;
+}
+
+.homeActiveAdItem_tag{
+	color: #E1F6FF;
+	margin-left: 0.5em;
+}
+
+.homeActiveAdItem_name{
+	margin-top: 0;
+	font-weight: 500;
+	margin-bottom: -0.3em;
+	font-size: 1.1em;
+}
+
+.homeActiveAdItem_date{
+	font-size: 0.5em;
+	margin-top: 0.9em;
+}
+
+.homeActiveAdItem_impressions{
+	margin-top: -0.1em;
+	margin-right: 0.5em;
+}

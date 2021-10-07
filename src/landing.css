@@ -1,0 +1,27 @@
+@media (min-width: 720px) and (min-height: 1024px){
+
+}
+
+@media (orientation: landscape){
+	.landing_hero{
+		flex-direction: row !important;
+		justify-content: space-around !important;
+	}
+
+	.landing_text{
+		text-align: left !important;
+	}
+
+	.landing_img{
+		margin: 0 !important;
+	}
+
+	.landing_invitation{
+		flex-direction: row-reverse !important;
+		justify-content: space-around !important;
+	}
+
+	.landing_coa{
+		display: none
+	}
+}

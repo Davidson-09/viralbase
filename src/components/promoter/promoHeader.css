@@ -1,0 +1,49 @@
+@media (min-width: 720px) and (min-height: 1024px) {
+	.sub_container{
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.logo{
+		text-align: left;
+	}
+
+	.list{
+		display: flex !important;
+		flex: 1;
+		justify-content: space-evenly;
+		margin-top: 2.5em;
+	}
+
+	.search_container{
+		width: 25em !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+@media (orientation: landscape) {
+	.sub_container{
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.logo{
+		text-align: left;
+	}
+
+	.list{
+		display: flex !important;
+		flex: 1;
+		justify-content: space-evenly;
+		margin-top: 2.5em;
+	}
+
+	.search_container{
+		width: 50em !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}

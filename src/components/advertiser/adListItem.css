@@ -1,0 +1,38 @@
+.adlistitem_container{
+	display: flex;
+	justify-content: space-between;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+
+.adlistitem_bottomLine{
+	background-color: #BDBDBD;
+	height: .02em;
+	width: 100%;
+}
+
+.adlistitem_name{
+	font-weight: 500;
+}
+
+.adlistitem_impressions{
+	font-weight: 300;
+}
+
+@media (min-width: 720px) and (min-height: 1024px){
+	.adlistitem_2{
+		text-align: center;
+		display: block !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+@media (orientation: landscape){
+	.adlistitem_2{
+		text-align: center;
+		display: block !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
