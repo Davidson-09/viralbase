@@ -12,7 +12,11 @@
 		text-align: left !important;
 	}
 
-	.landing_img{
+	.landing_cta_btn{
+		text-align: left !important;
+	}
+
+	.landing_hero_img{
 		margin: 0 !important;
 	}
 
@@ -23,5 +27,48 @@
 
 	.landing_coa{
 		display: none
+	}
+
+	.landing_invitecards{
+		display: none;
+	}
+
+	.landing_invitecards2{
+		display: block !important;
+	}
+
+	.landing_usp_div{
+		flex-direction: row !important;
+		justify-content: space-around !important;
+		margin-top: 5em;
+		max-width: 100em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.landing_people_img{
+		display: block !important;
+		padding-top: 1em;
+	}
+
+	.landing_usp_text-div{
+		margin: 0!important;
+	}
+
+	.landing_currency_div{
+		margin-top: 3em;
+		justify-content: center !important;
+		align-content: center !important;
+	}
+
+	.landing_currency_text_div{
+		max-width: 30em;
+		margin-left: auto !important;
+		margin-right: auto !important;
+		padding: 1em;
+	}
+
+	.landing_signin_btn{
+		display: block !important;
 	}
 }
