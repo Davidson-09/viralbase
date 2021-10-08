@@ -8,6 +8,7 @@ import Proceed from './pages/advertiser/Proceed';
 
 import Header from './components/advertiser/Header';
 import SignUp from './components/general/SignUp';
+import Login from './components/general/Login';
 
 import Landing from './Landing.js'
 
@@ -26,7 +27,7 @@ function App() {
 	  <Router>
 		<div className="App" style={{paddingLeft:'1em', paddingRight:'1em', height:'100%'}}>
 
-			<Route path='/' exact component={SignUp}/>
+			<Route path='/' exact component={Login}/>
 
 			{/* advertiser links */}
 			<Switch>
