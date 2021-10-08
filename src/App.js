@@ -7,6 +7,7 @@ import Home from './pages/advertiser/Home';
 import Proceed from './pages/advertiser/Proceed';
 
 import Header from './components/advertiser/Header';
+import SignUp from './components/general/SignUp';
 
 import Landing from './Landing.js'
 
@@ -23,9 +24,9 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 function App() {
   return (
 	  <Router>
-		<div className="App" style={{paddingLeft:'1em', paddingRight:'1em'}}>
+		<div className="App" style={{paddingLeft:'1em', paddingRight:'1em', height:'100%'}}>
 
-			<Route path='/' exact component={Landing}/>
+			<Route path='/' exact component={SignUp}/>
 
 			{/* advertiser links */}
 			<Switch>

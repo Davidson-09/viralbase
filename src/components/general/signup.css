@@ -1,0 +1,13 @@
+@media (min-width: 720px) and (min-height: 1024px){
+	.signup_form-div{
+		max-width: 30em;
+		margin: auto;
+	}
+}
+
+@media (orientation: landscape){
+	.signup_form-div{
+		max-width: 30em;
+		margin: auto;
+	}
+}
