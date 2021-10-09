@@ -9,6 +9,7 @@ import Proceed from './pages/advertiser/Proceed';
 import Header from './components/advertiser/Header';
 import SignUp from './components/general/SignUp';
 import Login from './components/general/Login';
+import Select from './components/general/Select';
 
 import Landing from './Landing.js'
 
@@ -27,7 +28,12 @@ function App() {
 	  <Router>
 		<div className="App" style={{paddingLeft:'1em', paddingRight:'1em', height:'100%'}}>
 
-			<Route path='/' exact component={Login}/>
+			<Route path='/' exact component={Landing}/>
+			<Switch>
+				<Route path='/login' component={Login}/>
+				<Route path='/signup/:role' component={SignUp}/>
+				<Route path='/select' component={Select}/>
+			</Switch>
 
 			{/* advertiser links */}
 			<Switch>

@@ -1,8 +1,35 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import {Link} from 'react-router-dom';
 
 import './signup.css'
 
-function SignUp(){
+function SignUp({match}){
+
+	const [title, setTitle] = useState('Full Name') // the title of the name input
+
+	const [name, setName] = useState('');
+	const [email, setEmail] = useState('');
+	const [phone, setPhone] = useState(''); //phone number
+	const [password, setPassword] = useState('');
+
+	useEffect(()=>{
+		console.log(match)
+		if (match.params.role == 'advertiser'){
+			setTitle('Business name');
+		}
+	})
+
+	const register =(e)=>{
+		// if role is advertiser
+		// register as advertiser
+		// if role is promoter 
+		// register as promoter
+		e.preventDefault();
+		if (match.params.role == 'advertiser'){
+			console.log('you are a new advertiser')
+		}
+	}
+
 	return(
 
 		<div style={{backgroundColor:'var(--blueprimary)', minHeight:'100vh', margin:'-1em', padding:'2em'}}>
@@ -15,30 +42,30 @@ function SignUp(){
 				</div>
 				<form style={{padding:'1em'}}>
 					<div style={{}}>
-						<p style={{marginBottom:'-.07em'}}>Full Name</p>
+						<p style={{marginBottom:'-.07em'}}>{title}</p>
 						<input required type='text' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} />
+							padding:'1em', fontSize:'1em'}} value={name} onChange={(e)=>{setName(e.target.value)}}/>
 					</div>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Email</p>
 						<input required type='email' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} />
+							padding:'1em', fontSize:'1em'}} value={email} onChange={(e)=>{setEmail(e.target.value)}}/>
 					</div>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Phone Number</p>
 						<input required type='phone number' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} />
+							padding:'1em', fontSize:'1em'}} value={phone} onChange={(e)=>{setPhone(e.target.value)}} />
 					</div>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Password</p>
 						<input required type='password' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} />
+							padding:'1em', fontSize:'1em'}} value={password} onChange={(e)=>{setPassword(e.target.value)}} />
 					</div>
 					<button style={{width:'100%', marginTop:'1em', padding:'.5em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',
 						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}}>Create account</button>
 				</form>
-				<p style={{textAlign:'center', fontSize:'.7em'}}>Don't have an account? Sign up</p>
+				<p style={{textAlign:'center', fontSize:'.7em'}}>Already have an account? <Link to='/login'>Log in</Link></p>
 			</div>
 		</div>
 

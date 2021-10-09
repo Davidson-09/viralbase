@@ -6,16 +6,34 @@ import Currency from './res/Currency'
 import People from './res/People'
 import './landing.css'
 
+import { useHistory} from 'react-router-dom';
+
 function Landing() {
+
+	const history = useHistory();
+
+	const toLogin =()=>{
+		history.push('/login')
+	}
+	
+	const toSelectPageSignUp =()=>{
+		history.push('/select')
+	}
+
+	const toAdSignUp =()=>{
+		// go to advertiser sign up page
+		history.push('/signup/advertiser')
+	}
+
 	return (
 		<div className='landing_container' style={{}}>
 			<div className='landing_header' style={{display:'flex', justifyContent:'space-between'}}>
 				<p style={{color:'var(--blueprimary)', fontWeight:'bold', fontSize:'1.5em', flex:'1'}}>viralbase</p>
 				<button style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'white',
-					borderRadius:'.5em', width:'10em', height:'3em'}}>log in</button>
+					borderRadius:'.5em', width:'10em', height:'3em'}} onClick={toLogin}>log in</button>
 				<button className='landing_signin_btn' style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'var(--blueprimary)',
 					borderRadius:'.5em', width:'10em', height:'3em', border:'none',
-					color:'white', fontWeight:'bold', display:'none'}}>Sign up</button>
+					color:'white', fontWeight:'bold', display:'none'}} onClick={toSelectPageSignUp}>Sign up</button>
 			</div>
 
 			<div className='landing_hero' style={{justifyContent:'center', alignContent:'center', display:'flex', flexDirection:'column',
@@ -27,8 +45,8 @@ function Landing() {
 					</h1>
 					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> gather attention for their<br/> goods and services</p>
 					<div className='landing_cta_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
-					<button style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
-					 border:'none', color:'white', fontWeight:'bold'}}>create free account</button>
+					<button onClick={toAdSignUp} style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
+					 border:'none', color:'white', fontWeight:'bold', fontSize:'1em'}}>create free advertiser account</button>
 						</div>
 				</div>
 				<div className='landing_hero_img' style={{marginLeft:'auto', marginRight:'auto'}}>
@@ -53,9 +71,6 @@ function Landing() {
 				<div className='landing_invitecards2' style={{display:'none'}}>
 				<InviteCards2  style={{display:'none'}}/>
 				</div>
-				<button className='landing_coa' style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
-					border:'none', color:'white', fontWeight:'bold', marginLeft:'auto', marginRight:'auto',
-					display:'static', marginTop:'.5em', marginBottom:'1em'}}>get started</button>
 			</div>
 
 			<div className='landing_usp_div' style={{display:'flex', flexDirection:'column', alignContent:'center'}}>
