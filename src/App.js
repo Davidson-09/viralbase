@@ -18,6 +18,7 @@ import ListOfAds from './components/promoter/ListOfAds';
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
+
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
 // the promoter pages do not
 // because I was experimenting with a newly learned folder structure which, it turned out, 

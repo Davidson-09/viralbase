@@ -1,5 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom';
+import SpinnerDiv from './SpinnerDiv';
+import {Link, useHistory} from 'react-router-dom';
+
+import {db, auth} from '../../fire'
+import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 import './signup.css'
 
@@ -12,6 +17,12 @@ function SignUp({match}){
 	const [phone, setPhone] = useState(''); //phone number
 	const [password, setPassword] = useState('');
 
+	const[progressDisplay, setProgressDisplay] = useState('none')
+
+	const history = useHistory();
+
+	//const user = {};
+
 	useEffect(()=>{
 		console.log(match)
 		if (match.params.role == 'advertiser'){
@@ -19,20 +30,67 @@ function SignUp({match}){
 		}
 	})
 
-	const register =(e)=>{
+	const register = async(e)=>{
 		// if role is advertiser
 		// register as advertiser
 		// if role is promoter 
 		// register as promoter
+		//show progress bar
+		setProgressDisplay('block')
 		e.preventDefault();
 		if (match.params.role == 'advertiser'){
+			createUserWithEmailAndPassword(auth, email, password).
+			then(()=>{
+				onAuthStateChanged(auth, async (user)=>{
+					if (user){
+						console.log(user.uid);
+						// set up the users profile in firestore
+						await setDoc(doc(db, 'users', user.uid), {
+							businessName: name, phoneNumber: phone, 
+							role: 'advertiser'
+						}).then(()=>{
+							console.log('firestore setup successful');
+							history.push('/advertiser/dashboard/Home')
+						})
+					}
+				})
+			}
+			).catch((error)=>{
+				const errorCode = error.code;
+    			const errorMessage = error.message;
+				console.log(errorMessage, errorCode)
+			})
 			console.log('you are a new advertiser')
+		} else {
+			// do something for promoter
+			createUserWithEmailAndPassword(auth, email, password).
+			then(()=>{
+				onAuthStateChanged(auth, async (user)=>{
+					if (user){
+						console.log(user.uid);
+						// set up the users profile in firestore
+						await setDoc(doc(db, 'users', user.uid), {
+							name: name, phoneNumber: phone, 
+							role: 'promoter'
+						}).then(()=>{
+							console('firestore setup successful')
+						})
+					}
+				})
+			}
+			).catch((error)=>{
+				const errorCode = error.code;
+    			const errorMessage = error.message;
+				console.log(errorMessage, errorCode)
+			})
+			console.log('you are a new promoter')
 		}
 	}
 
 	return(
 
 		<div style={{backgroundColor:'var(--blueprimary)', minHeight:'100vh', margin:'-1em', padding:'2em'}}>
+			<SpinnerDiv show={progressDisplay} />
 			<div><p style={{textAlign:'center', color:'white', fontWeight:'bold', fontSize:'1.5em',
 					}}>viralbase</p></div>
 			<div className='signup_form-div' style={{backgroundColor:'white', borderRadius:'1em', paddingTop:'2em'}}>
@@ -40,7 +98,7 @@ function SignUp({match}){
 					<h3>Create a free account</h3>
 					<p>welcome to the future of marketing</p>
 				</div>
-				<form style={{padding:'1em'}}>
+				<form onSubmit={register} style={{padding:'1em'}}>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>{title}</p>
 						<input required type='text' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
