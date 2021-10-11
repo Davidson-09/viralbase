@@ -121,7 +121,7 @@
 	}
 
 	.home_ad_list{
-		grid-template-columns: auto auto auto !important;
+		grid-template-columns: auto !important;
 	}
 
 	.home_createbutton{

@@ -45,7 +45,6 @@ function App() {
 				<Route path='/advertiser/dashboard' component={Header}/>
 				<Switch>
 					<Route path='/advertiser/dashboard/Home' component={Home}/>
-					<Route path='/advertiser/dashboard/ads' component={AdsPage}/>
 					<Route path='/advertiser/dashboard/addetails' component={AdDetails}/>
 					<Route path='/advertiser/dashboard/aditem' component={AdItem}/>
 				</Switch>
