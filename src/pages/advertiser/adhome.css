@@ -60,23 +60,25 @@
 
 
 @media (min-width: 720px) and (min-height: 1024px) {
-	.ad_home_subcontainer{
-		display: inline-flex;
-		padding: 0;
-	}
-
-	.vertical_line{
-		height: 50em;
-		margin-top: 1em;
-		background-color: #A0A0A0;
-		width:  .1em;
-		margin-left: 2em;
-		margin-right: 2em;
-	}
-
-	.ad_home_stat_container{
+	.ad_home_container{
 		display: flex;
+		justify-content: space-evenly;
+		width: 100%;
+	}
 
+	.home_business_name{
+		font-size: 2em;
+		margin: 0 !important;
+		margin-top: .5em !important;
+	}
+
+	.home_info_div{
+		display: block !important;
+		margin-top: 3em !important;
+	}
+
+	.home_big_add_btn{
+		display: block !important;
 	}
 
 	.ad_home_impressions_div{
@@ -84,25 +86,70 @@
 		height: 7em;
 		margin-top: 1em;
 		overflow: auto;
+		text-align: center;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
 	}
 
 	.ad_home_activeads_div{
 		width: 10em;
-		margin-left: 1em;
 		height: 7em;
 		margin-top: 1em;
 		overflow: auto;
+		text-align: center;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
 	}
 
 	.ad_home_stat_container{
-		display: flex;
+		display: none !important;
+	}
+
+	.ad_home_bargraph{
+		width: 50em;
+		margin-top: 2em;
+	}
+
+	.ad_home_stat_container2{
+		display: block !important;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
+	}
+
+	.home_add_btn{
+		display: none !important;
+	}
+
+	.home_ad_list{
+		grid-template-columns: auto auto auto !important;
+	}
+
+	.home_createbutton{
+		display: flex !important;
 	}
 }
 
 @media (orientation: landscape) {
 
 	.ad_home_container{
+		display: flex;
+		justify-content: space-evenly;
 		width: 100%;
+	}
+
+	.home_business_name{
+		font-size: 2em;
+		margin: 0 !important;
+		margin-top: .5em !important;
+	}
+
+	.home_info_div{
+		display: block !important;
+		margin-top: 3em !important;
+	}
+
+	.home_big_add_btn{
+		display: block !important;
 	}
 
 	.ad_home_impressions_div{
@@ -110,22 +157,45 @@
 		height: 7em;
 		margin-top: 1em;
 		overflow: auto;
+		text-align: center;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
 	}
 
 	.ad_home_activeads_div{
 		width: 10em;
-		margin-left: 1em;
 		height: 7em;
 		margin-top: 1em;
 		overflow: auto;
+		text-align: center;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
 	}
 
 	.ad_home_stat_container{
-		display: flex;
+		display: none !important;
 	}
 
 	.ad_home_bargraph{
 		width: 50em;
 		margin-top: 2em;
+	}
+
+	.ad_home_stat_container2{
+		display: block !important;
+		margin-left: 2em !important;
+		margin-bottom: 2em !important;
+	}
+
+	.home_add_btn{
+		display: none !important;
+	}
+
+	.home_ad_list{
+		grid-template-columns: auto auto auto !important;
+	}
+
+	.home_createbutton{
+		display: flex !important;
 	}
 }

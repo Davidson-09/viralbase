@@ -1,0 +1,17 @@
+@media (min-width: 720px) and (min-height: 1024px) {
+
+	.ad_card_img1{
+		width: 12em !important;
+		height: 12em !important;
+	}
+
+}
+
+@media (orientation: landscape) {
+	.ad_card_img1{
+		width: 15em !important;
+	}
+	
+	.adcard_text{
+	}
+}

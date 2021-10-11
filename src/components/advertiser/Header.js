@@ -42,7 +42,7 @@ function Header() {
 			<div>
 				<div className="ad__header__container">
 					<div className="ad__header__center">
-						<h3>ViralBase</h3>
+						<h3>viralbase</h3>
 					</div>
 					<div className="ad__header__right">
 						<MenuIcon onClick={showMenu}/>
@@ -56,16 +56,6 @@ function Header() {
 							<p className="ad_menu_item_text">Home</p>
 						</div>
 					</Link>
-					<Link to='/advertiser/dashboard/ads' style={{textDecoration:'none', color:'black'}}>
-						<div className="ad_menu_item">
-							<TrendingUpRoundedIcon className="ad_menu_item_icon"/>
-							<p className="ad_menu_item_text">ads</p>
-						</div>
-					</Link>
-					<div className="ad_menu_item">
-						<AccountBalanceWalletRoundedIcon className="ad_menu_item_icon"/>
-						<p className="ad_menu_item_text">financials</p>
-					</div>
 					<div className="ad_menu_item">
 						<PersonRoundedIcon className="ad_menu_item_icon"/>
 						<p className="ad_menu_item_text">account</p>
