@@ -24,17 +24,17 @@ function Proceed() {
 
 	return (
 		<div className="proceed_container" style={{backgroundColor:'var(--blueprimary)', display: 'flex', justifyContent:'center',
-		alignItems: 'center', margin:'-1em', width:'100%', height:'100%', position:'absolute'}}>
+		alignItems: 'center', margin:'-1em', width:'100%', height:'100vh', position:'absolute'}}>
 			
 			<div className="proceed_subcontainer"style={{backgroundColor:'white', width:'85%', height:'25em',
-			display:'flex', flexDirection:'column', alignItems: 'center', marginTop:'1em', marginBottom:'1em'}}>
+			display:'flex', flexDirection:'column', alignItems: 'center', marginTop:'1em', marginBottom:'1em', borderRadius:'1em'}}>
 				
-				<p style={{fontSize:'2em', color:'var(--blueprimary)', fontWeight:'bold'}}>Purchase impressions</p>
+				<p style={{fontSize:'2em', color:'var(--blueprimary)', fontWeight:'bold'}}>Buy impressions</p>
 				
 				<div className='proceed_form_container' style={{ display: 'flex', flexDirection:'column',
 				 justifyContent: 'center', alignItems: 'center'}}>
 				
-					<p style={{fontSize:'1.5em', fontWeight:'500'}}>Set number of impressions</p>
+					<p style={{ fontWeight:'500'}}>Set number of impressions</p>
 
 					<form>
 
@@ -43,8 +43,8 @@ function Proceed() {
 						type='number' placeholder='number of desired impressions: min 10' value={impressions} onChange={updateImpressions}/>
 						
 						<button className='proceed_btn' type='submit' style={{marginLeft:'6em', width:'50%', marginTop:'2em', height:'3em',
-						backgroundColor:'var(--blueprimary)', color:'white', fontWeight:'500',
-						marginBottom:'2em', justifySelf:'center', border:'none', borderRadius:'.3em'}}>{`pay N${price}`}</button>
+						backgroundColor:'var(--blueprimary)', color:'white', fontWeight:'500', fontSize:'1em',
+						marginBottom:'2em', justifySelf:'center', border:'none', borderRadius:'.3em'}}>pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
 					
 					</form>
 
