@@ -46,7 +46,9 @@ function SignUp({match}){
 						// set up the users profile in firestore
 						await setDoc(doc(db, 'users', user.uid), {
 							businessName: name, phoneNumber: phone, 
-							role: 'advertiser'
+							role: 'advertiser', impressions:0,
+							activeAds:0, totalImpressions:0,
+							availableImpressions:0
 						}).then(()=>{
 							console.log('firestore setup successful');
 							history.push('/advertiser/dashboard/Home')

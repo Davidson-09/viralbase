@@ -37,7 +37,7 @@ function App() {
 			{/* advertiser links */}
 			<Switch>
 				<Route path='/advertiser/createad' exact component={AdCreation}/>
-				<Route path='/advertiser/createad/proceed' component={Proceed}/>
+				<Route path='/advertiser/purchaseimpressions' component={Proceed}/>
 			</Switch>
 			<div className='ad_container' >
 				<Route path='/advertiser/dashboard' component={Header}/>
