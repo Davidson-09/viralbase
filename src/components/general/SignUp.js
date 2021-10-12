@@ -43,7 +43,6 @@ function SignUp({match}){
 			then(()=>{
 				onAuthStateChanged(auth, async (user)=>{
 					if (user){
-						console.log(user.uid);
 						// set up the users profile in firestore
 						await setDoc(doc(db, 'users', user.uid), {
 							businessName: name, phoneNumber: phone, 

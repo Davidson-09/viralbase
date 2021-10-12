@@ -13,10 +13,8 @@ import Select from './components/general/Select';
 
 import Landing from './Landing.js'
 
-import PromoHeader from './components/promoter/PromoHeader';
-import ListOfAds from './components/promoter/ListOfAds';
-
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import NewAlert from './components/general/NewAlert';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
