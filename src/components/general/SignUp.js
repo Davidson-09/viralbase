@@ -25,7 +25,7 @@ function SignUp({match}){
 
 	useEffect(()=>{
 		console.log(match)
-		if (match.params.role == 'advertiser'){
+		if (match.params.role === 'advertiser'){
 			setTitle('Business name');
 		}
 	})
@@ -38,7 +38,7 @@ function SignUp({match}){
 		//show progress bar
 		setProgressDisplay('block')
 		e.preventDefault();
-		if (match.params.role == 'advertiser'){
+		if (match.params.role === 'advertiser'){
 			createUserWithEmailAndPassword(auth, email, password).
 			then(()=>{
 				onAuthStateChanged(auth, async (user)=>{
