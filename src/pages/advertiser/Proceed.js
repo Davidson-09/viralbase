@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
 
-import { usePaystackPayment } from 'react-paystack';
+import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 
 import {auth, db} from '../../fire'
 import { onAuthStateChanged } from "firebase/auth";
@@ -24,7 +24,6 @@ function Proceed() {
 
 	const [impressions, setImpressions] = useState(0);
 	const [price, setPrice] = useState(0);
-	const [email, setEmail] = useState('')
 	const [user, setUser] = useState('')
 
 	const[progressDisplay, setProgressDisplay] = useState('none')
@@ -32,36 +31,31 @@ function Proceed() {
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
 
+	const config = {
+		public_key: 'FLWPUBK_TEST-3c04ac41964e14544df0f3ec7b4068ef-X',
+		tx_ref: Date.now(),
+		amount: price,
+		currency: 'NGN',
+		payment_options: 'card,mobilemoney,ussd',
+		customer: {
+		  email: user.email,
+		  uid: user.uid
+		},
+		customizations: {
+		  title: 'viralbase'
+		},
+	  };
+
+		const handleFlutterPayment = useFlutterwave(config);
+
 	useEffect(()=>{
 		getUser();
 	}, [])
 
 	const getUser =()=>{
 		onAuthStateChanged(auth, async (user)=>{
-			setEmail(user.email);
 			setUser(user)
 		})
-	}
-
-	const config = {
-		reference: (new Date()).getTime().toString(),
-		email: email,
-		amount: (price*100),
-		publicKey: 'pk_test_84b8e0f1f3b90329d2a236087494e5c09c021eda',
-	}
-
-	const onSuccess = async ()=>{
-		setProgressDisplay('block');
-		const userRef = doc(db, "users", user.uid);
-		await updateDoc(userRef, {
-			availableImpressions: increment(impressions)
-		  }).then(()=>{
-			  history.push('/advertiser/dashboard/Home')
-		  });
-	}
-
-	const onClose =()=>{
-
 	}
 
 	const calculatePrice =(e)=>{
@@ -74,21 +68,45 @@ function Proceed() {
 		calculatePrice(e);
 	}
 
+	const addImpressions = async ()=>{
+		// add purchased impressions to users account
+
+		setProgressDisplay(true);
+		const userRef = doc(db, "users", user.uid);
+		await updateDoc(userRef, {
+			availableImpressions: increment(impressions)
+		}).then(()=>{
+			history.push('/advertiser/dashboard/Home');
+		}).catch((error)=>{
+				setAlertMessage(error.message);
+				setDisplayAlert(true);
+				setAlertSeverity('warning');
+				setProgressDisplay(true);
+		});
+	}
+
 	const pay =(e)=>{
 
 		e.preventDefault();
-
 		if (impressions >= 10){
-			initializePayment(onSuccess, onClose)
+			handleFlutterPayment({
+				callback: (response) => {
+					console.log(response);
+				   setAlertMessage('successful');
+				   setDisplayAlert(true);
+				   setAlertSeverity('success');
+				   addImpressions();
+					closePaymentModal() // this will close the modal programmatically
+				},
+				onClose: () => {},
+			});
 		} else{
+			setAlertMessage('you cannot purhase less than 10 impressions');
 			setDisplayAlert(true);
 			setAlertSeverity('warning');
-			setAlertMessage('Cannot purchase less than 10 impressions');
 		}
 
 	}
-
-	const initializePayment = usePaystackPayment(config);
 
 	return (
 		<div className="proceed_container" style={{backgroundColor:'var(--blueprimary)', display: 'flex', justifyContent:'center',

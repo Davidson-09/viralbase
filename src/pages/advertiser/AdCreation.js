@@ -22,7 +22,6 @@ function AdCreation() {
 	const [media, setMedia] = useState(''); // ad media file
 	const [displaybutton, setDisplayButton] = useState(true); //display upload button
 	const [showPreview, setShowPreview] = useState(false);
-	const [videoThumbnail, setVideoThumbnail] = useState();
 
 	const [adName, setAdName] = useState('');
 	const [description, setDescription] = useState('');
@@ -50,10 +49,10 @@ function AdCreation() {
 					let adRef = ref(storage, `ads/media/thumbnail/${media.name}`)
 					generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
 						setProgressDisplay('none');
-					setDisplayAlert(true);
-					setAlertSeverity('success');
+					    setDisplayAlert(true);
+					    setAlertSeverity('success');
 						setAlertMessage('uploading thumbnail...');
-					uploadBytes(adRef, thumbnail, 'base64' ).then((snapshot)=>{
+					    uploadBytes(adRef, thumbnail, 'base64' ).then((snapshot)=>{
 						thumbnailUrl= snapshot.metadata.fullPath;
 						// upload video;
 						let adRef = ref(storage, `ads/media/videos/${media.name}`)
