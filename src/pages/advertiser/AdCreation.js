@@ -29,7 +29,7 @@ function AdCreation() {
 	const [tagline, setTagline] = useState('');
 	const [adLink, setAdLink] = useState('');
 
-	const[progressDisplay, setProgressDisplay] = useState('none')
+	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
@@ -44,15 +44,16 @@ function AdCreation() {
 				let thumbnailUrl = null; // thumbnail storage pointer
 				let videoUrl = null; // video storage pointer
 				let photoUrl = null;
-				// upload media file to stoage
+				// upload media file to storage
 				if (media.type === 'video/mp4'){
 					// upload the thumbnail
 					let adRef = ref(storage, `ads/media/thumbnail/${media.name}`)
-					setProgressDisplay('none');
+					generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
+						setProgressDisplay('none');
 					setDisplayAlert(true);
 					setAlertSeverity('success');
-					setAlertMessage('uploading thumbnail...');
-					uploadBytes(adRef, videoThumbnail). then((snapshot)=>{
+						setAlertMessage('uploading thumbnail...');
+					uploadBytes(adRef, thumbnail, 'base64' ).then((snapshot)=>{
 						thumbnailUrl= snapshot.metadata.fullPath;
 						// upload video;
 						let adRef = ref(storage, `ads/media/videos/${media.name}`)
@@ -90,6 +91,8 @@ function AdCreation() {
 						setAlertSeverity('warning');
 						setAlertMessage(error.message);
 					})
+					});
+					
 				} else if(media.type === 'image/jpeg' || media.type == 'image/png'){
 					// upload photo
 					let adRef = ref(storage, `ads/media/photos/${media.name}`)
@@ -118,7 +121,7 @@ function AdCreation() {
 				} else{
 					setDisplayAlert(true);
 					setAlertSeverity('warning');
-					setAlertMessage('invalid file format');
+					setAlertMessage('invalid file format, file must be a PNG, JPEG or mp4');
 
 					setDisplayButton(true);
 					setProgressDisplay('none');
@@ -127,7 +130,7 @@ function AdCreation() {
 		} else{
 			setDisplayAlert(true);
 			setAlertSeverity('warning');
-			setAlertMessage('file is too big');
+			setAlertMessage('file is too big, should be 50Mb or less');
 
 			setDisplayButton(true);
 			setProgressDisplay('none');
@@ -150,6 +153,42 @@ function AdCreation() {
 		setShowPreview(false);
 	}
 
+	async function generateThumbnail(videoUrl) {
+		return new Promise(async (resolve) => {
+	  
+		  // fully download it first (no buffering):
+		  let videoBlob = await fetch(videoUrl).then(r => r.blob());
+		  let videoObjectUrl = URL.createObjectURL(videoBlob);
+		  let video = document.createElement("video");
+	  
+		  let seekResolve;
+		  video.addEventListener('seeked', async function() {
+			if(seekResolve) seekResolve();
+		  });
+	  
+		  video.addEventListener('loadeddata', async function() {
+			let canvas = document.createElement('canvas');
+			let context = canvas.getContext('2d');
+			let [w, h] = [video.videoWidth, video.videoHeight]
+			canvas.width =  w;
+			canvas.height = h;
+
+			video.currentTime = 1;
+			await new Promise(r => seekResolve=r);
+	  
+			context.drawImage(video, 0, 0, w, h);
+			let base64ImageData = canvas.toDataURL();
+			let frame = base64ImageData;
+			resolve(frame);
+		  });
+	  
+		  // set video src *after* listening to events in case it loads so fast
+		  // that the events occur before we were listening.
+		  video.src = videoObjectUrl; 
+	  
+		});
+	  }
+
 
 	const hiddenFileInput = React.useRef(null);
 
@@ -171,14 +210,6 @@ function AdCreation() {
 						<DeleteRoundedIcon style={{marginTop:'7em', color:'var(--blueprimary)'}} onClick={clear}/>
 					</div>
 					{isOverSize && (<p style={{textAlign:'center', width:'100%', color:'#FF0000', fontSize:'.7em'}}>video file size is over 50MB</p>)}
-				  </div>
-				<div style={{visibility:'hidden'}}>
-				  <VideoThumbnail
-				  videoUrl={objectUrl}
-				  thumbnailHandler={(thumbnail) => setVideoThumbnail(thumbnail)}
-				  width={50}
-				  height={25}
-				  style={{width:'2em', height:'1em', display:'none'}}/>
 				  </div>
 				  </div>
 				  

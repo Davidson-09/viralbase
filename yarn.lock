@@ -6260,6 +6260,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.npmjs.org/get-value/-/get-value-2.0.6.tgz"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
+get-video-screenshot@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/get-video-screenshot/-/get-video-screenshot-1.0.1.tgz#f0fdcca79313fd8ef6369615b26efa94b695c2a2"
+  integrity sha512-egSSQTdVJ9l1y9R3WHf/KCIi2zc9I+z1YoW7OE2gF1V8y9zP/G3VXiI/k8zQgeUJiz+lWYHZ7sG4u22PfWlKKQ==
+
 getpass@^0.1.1:
   version "0.1.7"
   resolved "https://registry.npmjs.org/getpass/-/getpass-0.1.7.tgz"
