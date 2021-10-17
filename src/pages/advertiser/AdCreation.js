@@ -6,7 +6,7 @@ import VideoThumbnail from 'react-video-thumbnail';
 import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
 
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, uploadString } from "firebase/storage";
 import {auth, db, storage} from '../../fire'
 import { onAuthStateChanged } from "firebase/auth";
 import { updateDoc, doc, increment, setDoc } from '@firebase/firestore';
@@ -22,6 +22,7 @@ function AdCreation() {
 	const [media, setMedia] = useState(''); // ad media file
 	const [displaybutton, setDisplayButton] = useState(true); //display upload button
 	const [showPreview, setShowPreview] = useState(false);
+	const [user, setUser] = useState();
 
 	const [adName, setAdName] = useState('');
 	const [description, setDescription] = useState('');
@@ -39,6 +40,7 @@ function AdCreation() {
 			setProgressDisplay('block');
 			setShowPreview(false);
 			onAuthStateChanged(auth, async (user)=>{
+				setUser(user);
 				let uid = user.uid
 				let thumbnailUrl = null; // thumbnail storage pointer
 				let videoUrl = null; // video storage pointer
@@ -52,7 +54,7 @@ function AdCreation() {
 					    setDisplayAlert(true);
 					    setAlertSeverity('success');
 						setAlertMessage('uploading thumbnail...');
-					    uploadBytes(adRef, thumbnail, 'base64' ).then((snapshot)=>{
+					    uploadString(adRef, thumbnail, 'data_url' ).then((snapshot)=>{
 						thumbnailUrl= snapshot.metadata.fullPath;
 						// upload video;
 						let adRef = ref(storage, `ads/media/videos/${media.name}`)
@@ -70,12 +72,13 @@ function AdCreation() {
 								type: 'video',
 								mediaFile: videoUrl,
 								thumbnail: thumbnailUrl,
-								owner: uid
+								owner: uid,
+								active: true
 							}
 							// the name of the firestore object is the users uid plus the name of the file
-							setDoc(doc(db, 'ads', (uid + adName)), newAd).then(
-								history.push('/advertiser/dashboard/Home')
-							).catch((error)=>{
+							setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
+								updateAds(uid);
+							}).catch((error)=>{
 								setAlertSeverity('warning');
 								setAlertMessage(error.message);
 							})
@@ -108,11 +111,12 @@ function AdCreation() {
 							link: adLink,
 							type: 'photo',
 							mediaFile: photoUrl,
-							owner: uid
+							owner: uid,
+							active: true
 						}
-						setDoc(doc(db, 'ads', (uid + adName)), newAd).then(
-							history.push('/advertiser/dashboard/Home')
-						).catch((error)=>{
+						setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
+							updateAds(uid);
+						}).catch((error)=>{
 							setAlertSeverity('warning');
 							setAlertMessage(error.message);
 						})
@@ -136,6 +140,22 @@ function AdCreation() {
 		}
 		
 		
+	}
+
+	const updateAds = async (uid)=>{
+		// update the number of active ads in the users account
+		setProgressDisplay(true);
+		const userRef = doc(db, "users", uid);
+		await updateDoc(userRef, {
+			activeAds: increment(1)
+		}).then(()=>{
+			history.push('/advertiser/dashboard/Home');
+		}).catch((error)=>{
+				setAlertMessage(error.message);
+				setDisplayAlert(true);
+				setAlertSeverity('warning');
+				setProgressDisplay(true);
+		});
 	}
 
 	const handleMedia =(e)=>{

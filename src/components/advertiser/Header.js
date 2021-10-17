@@ -13,6 +13,9 @@ import {Link} from 'react-router-dom';
 
 // note for the future: this components extracts from two different css classes
 // adHeader.css and admenu.css
+
+//actually supposed to be named Navigation
+
 function Header() {
 
 	const [menuVisibility, setMenuVisibility] = useState('none');

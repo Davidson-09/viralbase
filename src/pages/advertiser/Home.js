@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import AdCard from '../../components/advertiser/AdCard'
+import Empty from '../../components/advertiser/Empty'
 import { Button } from '@material-ui/core';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import SpinnerDiv from '../../components/general/SpinnerDiv'
 
 import {auth, db} from '../../fire'
 import { onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc } from '@firebase/firestore';
+import { getDoc, doc, collection, query, where, getDocs } from '@firebase/firestore';
 
 import { useHistory } from 'react-router-dom';
 
@@ -16,10 +17,13 @@ import './adhome.css'
 
 function Home() {
 
+	const [adList, setAdList] = useState()
+
 	const history = useHistory();
 
 	const [userData, setUserData] = useState({});
-	const[progressDisplay, setProgressDisplay] = useState('none')
+	const [progressDisplay, setProgressDisplay] = useState('none')
+
 
 	useEffect(()=>{
 		getUserData();
@@ -34,11 +38,26 @@ function Home() {
 			if (docSnap.exists()) {
 				const userDoc = docSnap.data();
 				setUserData(userDoc);
+				getAds(user.uid);
 				setProgressDisplay('none');
 			} else{
 				setProgressDisplay('none');
 			}
 		})
+	}
+
+	const getAds = async (uid)=>{
+		// get the users ads
+		const adsRef = collection(db, "ads");
+		const q = query(adsRef, where("owner", "==", uid));
+		const querySnapshot = await getDocs(q);
+		let ads = [];
+		querySnapshot.forEach((doc) => {
+			// doc.data() is never undefined for query doc snapshots
+			let ad = {id: doc.id, data: doc.data()};
+			ads.push(ad);
+		});
+		setAdList(ads)
 	}
 
 	const toImpressionPurchasePage =()=>{
@@ -92,7 +111,10 @@ function Home() {
 				</div>
 				<div className='home_ad_list' style={{display:'grid', gridTemplateColumns:'auto auto', marginLeft:'1em', overflow:'auto',
 					maxHeight:'25em'}}>
-					<AdCard/>
+					{!(adList) && (<Empty/>)}
+					{adList && adList.map(ad =>
+						<AdCard ad={ad} key={ad.id} />
+					)}
 				</div>
 		</div>
 		<div >
