@@ -1,5 +1,21 @@
-.adDetails_scrollmenu{
-    overflow-x: auto;
-    white-space: nowrap;
-	display: flex;
+@media (min-width: 720px) and (min-height: 1024px){
+	.addetails_subcontainer{
+		width: 50% !important;
+		padding: 3em !important
+	}
+
+	.addetails_media_container{
+		height: 15em !important;
+	}
+}
+
+@media (orientation: landscape){
+	.addetails_subcontainer{
+		width: 50% !important;
+		padding: 3em !important
+	}
+
+	.addetails_media_container{
+		height: 15em !important;
+	}
 }

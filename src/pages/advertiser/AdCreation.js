@@ -73,7 +73,9 @@ function AdCreation() {
 								mediaFile: videoUrl,
 								thumbnail: thumbnailUrl,
 								owner: uid,
-								active: true
+								active: true,
+								impressions:0,
+								promoters:0
 							}
 							// the name of the firestore object is the users uid plus the name of the file
 							setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
@@ -112,7 +114,9 @@ function AdCreation() {
 							type: 'photo',
 							mediaFile: photoUrl,
 							owner: uid,
-							active: true
+							active: true,
+							impressions:0,
+							promoters:0
 						}
 						setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
 							updateAds(uid);

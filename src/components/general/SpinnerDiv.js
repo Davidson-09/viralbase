@@ -1,6 +1,5 @@
 import { CircularProgress } from '@mui/material'
 import React from 'react'
-import { Spinner } from 'react-bootstrap'
 
 function SpinnerDiv({show}) {
 	return (

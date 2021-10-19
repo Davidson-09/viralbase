@@ -2,11 +2,13 @@ import React, {useState, useEffect} from 'react'
 
 import { ref, getDownloadURL } from "firebase/storage";
 import {storage} from '../../fire'
-
-import shoes from '../../res/shoes.jpg'
 import './adCard.css'
 
+import { useHistory } from 'react-router-dom';
+
 function AdCard({ad}){
+
+	const history = useHistory();
 
 	const [impressions, setImpressions] = useState(0);
 	const [image, setImage] = useState();
@@ -35,8 +37,12 @@ function AdCard({ad}){
 		}
 	}
 
+	const toDetails =()=>{
+		history.push(`/advertiser/addetails/${ad.id}`)
+	}
+
 	return(
-		<div style={{marginBottom:'1em'}}>
+		<div style={{marginBottom:'1em'}} onClick={toDetails}>
 			<div className='ad_card_img1' style={{width:'10em', height:'10em' }}>
 				<img className='ad_card_img1' alt='ad image' src={image} style={{width:'10em', height:'10em', borderRadius:'.5em'}}/>
 			</div>

@@ -59,10 +59,12 @@ function Header() {
 							<p className="ad_menu_item_text">Home</p>
 						</div>
 					</Link>
+					<Link to='/advertiser/dashboard/account' style={{textDecoration:'none', color:'black'}}>
 					<div className="ad_menu_item">
 						<PersonRoundedIcon className="ad_menu_item_icon"/>
 						<p className="ad_menu_item_text">account</p>
 					</div>
+					</Link>
 				</div>
 			</div>
 			<div className='vertical_line'/>

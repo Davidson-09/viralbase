@@ -7,6 +7,7 @@ import Home from './pages/advertiser/Home';
 import Proceed from './pages/advertiser/Proceed';
 
 import Header from './components/advertiser/Header';
+import AdAccount from './components/advertiser/AdAccount';
 import SignUp from './components/general/SignUp';
 import Login from './components/general/Login';
 import Select from './components/general/Select';
@@ -25,7 +26,7 @@ import NewAlert from './components/general/NewAlert';
 function App() {
   return (
 	  <Router>
-		<div className="App" style={{paddingLeft:'1em', paddingRight:'1em', height:'100%'}}>
+		<div className="App" style={{}}>
 
 			<Route path='/' exact component={Landing}/>
 			<Switch>
@@ -38,13 +39,13 @@ function App() {
 			<Switch>
 				<Route path='/advertiser/createad' exact component={AdCreation}/>
 				<Route path='/advertiser/purchaseimpressions' component={Proceed}/>
+				<Route path='/advertiser/addetails/:adid' component={AdDetails}/>
 			</Switch>
 			<div className='ad_container' >
 				<Route path='/advertiser/dashboard' component={Header}/>
 				<Switch>
 					<Route path='/advertiser/dashboard/Home' component={Home}/>
-					<Route path='/advertiser/dashboard/addetails' component={AdDetails}/>
-					<Route path='/advertiser/dashboard/aditem' component={AdItem}/>
+					<Route path='/advertiser/dashboard/account' component={AdAccount}/>
 				</Switch>
 			</div>
 
