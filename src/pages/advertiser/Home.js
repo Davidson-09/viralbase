@@ -69,7 +69,7 @@ function Home() {
 	}
 
 	return (
-		<div className='ad_home_container'>
+		<div className='ad_home_container' style={{paddingLeft:"1em", paddingRight:'1em'}}>
 			<SpinnerDiv show={progressDisplay} />
 		<div style={{flex:1}}>
 			<p className='home_business_name' style={{fontWeight:'700'}}>{userData.businessName}</p>
@@ -93,7 +93,7 @@ function Home() {
 						</div> 
 						<div className='ad_home_activeads_div'>
 							<p className='ad_home_activeads_count'>{userData.activeAds}</p>
-							<p className='ad_home_activeads_text'>active ads</p>
+							<p className='ad_home_activeads_text'>ads</p>
 						</div>
 					</div>
 				</div>
@@ -125,7 +125,7 @@ function Home() {
 				</div> 
 				<div className='ad_home_activeads_div'>
 					<p className='ad_home_activeads_count'>{userData.activeAds}</p>
-					<p className='ad_home_activeads_text'>active ads</p>
+					<p className='ad_home_activeads_text'>ads</p>
 				</div>
 			</div>
 			</div>

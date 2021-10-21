@@ -4,11 +4,10 @@ import SpinnerDiv from '../../components/general/SpinnerDiv';
 
 import { useHistory } from 'react-router-dom';
 
-import { db, storage } from '../../fire';
-import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
-
-import shoe from '../../res/shoes.jpg'
+import { db, storage, auth } from '../../fire';
+import { doc, getDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
+import { ref, getDownloadURL,  deleteObject } from "firebase/storage";
+import {  onAuthStateChanged } from "firebase/auth";
 
 import './addetail.css';
 
@@ -32,15 +31,25 @@ function AdDetails({match}) {
 	const history = useHistory();
 
 	useEffect(()=>{
-		console.log('on God')
 		getAd();
 		loadMedia();
 	}, [])
 
 	const loadMedia =()=>{
-		getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
-			setMediaUrl(url)
-		})
+		if (ad.data.type === 'photo'){
+			getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
+				setMediaUrl(url)
+			})
+		} else {
+			// it is a video
+			getDownloadURL(ref(storage, ad.data.mediaFile)).then(async (url)=>{
+			const media = await fetch(url);
+			const mediaBlob = await media.blob();
+			const mediaUrl = URL.createObjectURL(mediaBlob);
+			setMediaUrl(mediaUrl);
+			})
+		}
+		
 	}
 
 	const getAd = async ()=>{
@@ -74,14 +83,38 @@ function AdDetails({match}) {
 	}
 
 	const deleteAd = async ()=>{
+		// delete firestore object
 		setProgressDisplay('block');
-		await deleteDoc(doc(db, "ads", ad.id));
-		history.push('/advertiser/dashboard/Home')
+		await deleteDoc(doc(db, "ads", ad.id)).then(()=>{
+			const mediaRef = ref(storage, ad.data.mediaFile);
+			deleteObject(mediaRef).then(() => {
+				// File deleted successfully
+				// decrement the number of active ads
+				decrementActiveAds()
+				
+			  }).catch((error) => {
+				// Uh-oh, an error occurred!
+			  });
+		});
+		//delete media file
+	}
+
+	const decrementActiveAds =()=>{
+		// this function reduces the number of an advertisers active ads by 1
+		
+		onAuthStateChanged(auth, async (user)=>{
+			const userRef = doc(db, "users", user.uid);
+			await updateDoc(userRef, {
+				activeAds: increment(-1)
+			}).then(()=>{
+				history.push('/advertiser/dashboard/Home')
+			})
+		})
 	}
 
 	const changeMode = async ()=>{
 		if (ad.data.active){
-			// if the a is active deactivate it
+			// if the ad is active deactivate it
 			setProgressDisplay('block');
 			await updateDoc(doc(db, "ads", ad.id), {
 				active: false
@@ -94,7 +127,7 @@ function AdDetails({match}) {
 		} else{
 			setProgressDisplay('block');
 			await updateDoc(doc(db, "ads", ad.id), {
-				active: false
+				active: true
 			  });
 			  setModeColor(green);
 			  setButtonColor(red);

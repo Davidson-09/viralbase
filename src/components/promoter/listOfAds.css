@@ -2,7 +2,6 @@
 
 	.list_of_ads{
 		grid-template-columns: auto auto auto !important;
-		margin-left: 3em !important;
 	}
 
 	.title{
@@ -15,11 +14,9 @@
 
 	.list_of_ads{
 		grid-template-columns: auto auto auto !important;
-		margin-left: 3em !important;
 	}
 
 	.title{
-		margin-left: 11em;
 	}
 
 }

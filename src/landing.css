@@ -69,6 +69,26 @@
 		display: block !important;
 	}
 
+	.landing_promoter_hero{
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		padding-left: 10em;
+		padding-right: 10em;
+		margin-top: 2em;
+		margin-bottom: 2em;
+	}
+
+	.landing_promoter_text{
+		text-align: right !important;
+		margin-top: -.5em;
+	}
+
+	.landing_promoter_btn{
+		text-align: right !important;
+		margin-top: -.3em;
+	}
+
 }
 
 @media (orientation: landscape){
@@ -139,5 +159,25 @@
 
 	.landing_signin_btn{
 		display: block !important;
+	}
+
+	.landing_promoter_hero{
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		padding-left: 10em;
+		padding-right: 10em;
+		margin-top: 2em;
+		margin-bottom: 2em;
+	}
+
+	.landing_promoter_text{
+		text-align: right !important;
+		margin-top: -.5em;
+	}
+
+	.landing_promoter_btn{
+		text-align: right !important;
+		margin-top: -.3em;
 	}
 }

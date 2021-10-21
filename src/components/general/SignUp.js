@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import SpinnerDiv from './SpinnerDiv';
 import {Link, useHistory} from 'react-router-dom';
+import NewAlert from './NewAlert';
 
 import {db, auth} from '../../fire'
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
@@ -17,16 +18,18 @@ function SignUp({match}){
 	const [phone, setPhone] = useState(''); //phone number
 	const [password, setPassword] = useState('');
 
-	const[progressDisplay, setProgressDisplay] = useState('none')
+	const[progressDisplay, setProgressDisplay] = useState('none');
+	const [alertMessage, setAlertMessage] = useState('');
+	const [alertSeverity, setAlertSeverity] = useState('');
+	const [displayAlert, setDisplayAlert] = useState(false);
 
 	const history = useHistory();
 
 	//const user = {};
 
 	useEffect(()=>{
-		console.log(match)
 		if (match.params.role === 'advertiser'){
-			setTitle('Business name');
+			setTitle('Business name'); 
 		}
 	})
 
@@ -50,18 +53,17 @@ function SignUp({match}){
 							activeAds:0, totalImpressions:0,
 							availableImpressions:0
 						}).then(()=>{
-							console.log('firestore setup successful');
 							history.push('/advertiser/dashboard/Home')
 						})
 					}
 				})
 			}
 			).catch((error)=>{
-				const errorCode = error.code;
-    			const errorMessage = error.message;
-				console.log(errorMessage, errorCode)
+				setProgressDisplay('none');
+				setDisplayAlert(true);
+				setAlertSeverity('warning');
+				setAlertMessage(error.message);
 			})
-			console.log('you are a new advertiser')
 		} else {
 			// do something for promoter
 			createUserWithEmailAndPassword(auth, email, password).
@@ -72,25 +74,26 @@ function SignUp({match}){
 						// set up the users profile in firestore
 						await setDoc(doc(db, 'users', user.uid), {
 							name: name, phoneNumber: phone, 
-							role: 'promoter'
+							role: 'promoter', impressions:0
 						}).then(()=>{
-							console('firestore setup successful')
+							history.push('/promoter/front/home ')
 						})
 					}
 				})
 			}
 			).catch((error)=>{
-				const errorCode = error.code;
-    			const errorMessage = error.message;
-				console.log(errorMessage, errorCode)
+				setProgressDisplay('none');
+				setDisplayAlert(true);
+				setAlertSeverity('warning');
+				setAlertMessage(error.message);
 			})
-			console.log('you are a new promoter')
 		}
 	}
 
 	return(
 
 		<div style={{backgroundColor:'var(--blueprimary)', minHeight:'100vh', margin:'-1em', padding:'2em'}}>
+			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
 			<SpinnerDiv show={progressDisplay} />
 			<div><p style={{textAlign:'center', color:'white', fontWeight:'bold', fontSize:'1.5em',
 					}}>viralbase</p></div>

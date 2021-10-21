@@ -9,7 +9,7 @@
 
 @media (orientation: landscape) {
 	.ad_card_img{
-		width: 20em !important;
-		height: 20em !important;
+		width: 15em !important;
+		height: 15em !important;
 	}
 }

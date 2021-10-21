@@ -5,9 +5,9 @@ import './promoHeader.css'
 function PromoHeader() {
 
 	  return (
-		  <div>
+		  <div style={{paddingLeft:"1em", paddingRight:'1em'}}>
 			  <div className='sub_container' style={{display:'flex', width:'100%', justifyContent:'space-between'}}>
-					<p className='logo' style={{color:'var(--blueprimary)', fontWeight:800, textAlign:'center', fontSize:'2em', flex:'1'}}>Viralbase</p>
+					<p className='logo' style={{color:'var(--blueprimary)', fontWeight:800, textAlign:'center', fontSize:'2em', flex:'1'}}>viralbase</p>
 					<ul className='list' style={{display:'none'}}>
 						<li>Home</li>
 						<li>Activity</li>

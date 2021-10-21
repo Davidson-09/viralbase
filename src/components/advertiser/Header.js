@@ -41,8 +41,8 @@ function Header() {
 	}
 
 	return (
-		<div className='super_container'>
-			<div>
+		<div className='super_container' style={{paddingLeft:"1em", paddingRight:'1em'}}>
+			<div >
 				<div className="ad__header__container">
 					<div className="ad__header__center">
 						<h3>viralbase</h3>

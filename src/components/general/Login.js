@@ -37,9 +37,11 @@ function Login() {
 					console.log(userDoc)
 					if (userDoc.role == 'advertiser'){
 						// go to advertiser dashbaord
-						history.push('/advertiser/dashboard/Home')
+						history.push('/advertiser/dashboard/Home');
 					} else{
+						// the user is a promoter
 						//go to promoter page
+						history.push('/promoter/front/home');
 					}
 				}
 			})
@@ -72,6 +74,7 @@ function Login() {
 						<p style={{marginBottom:'-.07em'}}>Password</p>
 						<input required type='password' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}} value={password} onChange={(e)=>{setPassword(e.target.value)}} />
+							<p style={{fontSize:'.7em'}}><Link to='/changepassword'>forgot password?</Link></p>
 					</div>
 					<button style={{width:'100%', marginTop:'1em', padding:'.5em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',

@@ -50,20 +50,14 @@ function AdCreation() {
 					// upload the thumbnail
 					let adRef = ref(storage, `ads/media/thumbnail/${media.name}`)
 					generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
-						setProgressDisplay('none');
-					    setDisplayAlert(true);
-					    setAlertSeverity('success');
-						setAlertMessage('uploading thumbnail...');
 					    uploadString(adRef, thumbnail, 'data_url' ).then((snapshot)=>{
 						thumbnailUrl= snapshot.metadata.fullPath;
 						// upload video;
 						let adRef = ref(storage, `ads/media/videos/${media.name}`)
 						setDisplayAlert(true);
-						setAlertMessage('uploading video...');
 						uploadBytes(adRef, media).then((snapshot)=>{
 							videoUrl=snapshot.metadata.fullPath;
 							// set firestore object 
-							setAlertMessage('setting up your ad...');
 							let newAd = {
 								name: adName,
 								description: description,
@@ -81,11 +75,15 @@ function AdCreation() {
 							setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
 								updateAds(uid);
 							}).catch((error)=>{
+								setProgressDisplay('none');
+								setDisplayAlert(true);
 								setAlertSeverity('warning');
 								setAlertMessage(error.message);
 							})
 							
 						}).catch((error)=>{
+							setProgressDisplay('none');
+							setDisplayAlert(true);
 							setAlertSeverity('warning');
 							setAlertMessage(error.message);
 						})

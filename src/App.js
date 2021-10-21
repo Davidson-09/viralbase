@@ -1,8 +1,6 @@
 import './App.css';
 import AdCreation from './pages/advertiser/AdCreation';
 import AdDetails from './pages/advertiser/AdDetails';
-import AdItem from './pages/advertiser/AdItem';
-import AdsPage from './pages/advertiser/AdsPage';
 import Home from './pages/advertiser/Home';
 import Proceed from './pages/advertiser/Proceed';
 
@@ -10,12 +8,17 @@ import Header from './components/advertiser/Header';
 import AdAccount from './components/advertiser/AdAccount';
 import SignUp from './components/general/SignUp';
 import Login from './components/general/Login';
+import ChangePassword from './components/general/ChangePassword';
 import Select from './components/general/Select';
+ 
+import PromoHeader from './components/promoter/PromoHeader'
+import ListOfAds from './components/promoter/ListOfAds'
 
 import Landing from './Landing.js'
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import NewAlert from './components/general/NewAlert';
+import AdPage from './components/promoter/AdPage';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
@@ -32,6 +35,7 @@ function App() {
 			<Switch>
 				<Route path='/login' component={Login}/>
 				<Route path='/signup/:role' component={SignUp}/>
+				<Route path='/changepassword' component={ChangePassword}/>
 				<Route path='/select' component={Select}/>
 			</Switch>
 
@@ -50,6 +54,12 @@ function App() {
 			</div>
 
 			{/* promoter links */}
+
+			<Route path='/promoter/front' component={PromoHeader}/>
+			<Switch>
+				<Route path='/promoter/front/home' component={ListOfAds}/>
+			</Switch>
+			<Route path='/promoter/addetails/:ad' component={AdPage}/>
 
 		</div>
 	  </Router>
