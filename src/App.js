@@ -19,6 +19,10 @@ import Landing from './Landing.js'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import NewAlert from './components/general/NewAlert';
 import AdPage from './components/promoter/AdPage';
+import PromoAccount from './components/promoter/PromoAccount';
+import Promotions from './components/promoter/Promotions';
+import PromotionDetails from './components/promoter/PromotionDetails';
+import Widthdraw from './components/promoter/Widthdraw';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
@@ -58,8 +62,12 @@ function App() {
 			<Route path='/promoter/front' component={PromoHeader}/>
 			<Switch>
 				<Route path='/promoter/front/home' component={ListOfAds}/>
+				<Route path='/promoter/front/account' component={PromoAccount}/>
+				<Route path='/promoter/front/promotions' component={Promotions}/>
 			</Switch>
 			<Route path='/promoter/addetails/:ad' component={AdPage}/>
+			<Route path='/promoter/promotionDetails/:promotion' component={PromotionDetails}/>
+			<Route path='/promoter/withdraw/:user' component={Widthdraw}/>
 
 		</div>
 	  </Router>

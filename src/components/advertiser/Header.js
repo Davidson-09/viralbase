@@ -4,8 +4,6 @@ import './admenu.css'
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
-import TrendingUpRoundedIcon from '@material-ui/icons/TrendingUpRounded';
-import AccountBalanceWalletRoundedIcon from '@material-ui/icons/AccountBalanceWalletRounded';
 import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 
 import {Link} from 'react-router-dom';

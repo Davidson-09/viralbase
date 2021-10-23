@@ -18,7 +18,7 @@ function Login() {
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const[progressDisplay, setProgressDisplay] = useState('none')
+	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
@@ -34,7 +34,6 @@ function Login() {
 
 				if (docSnap.exists()) {
 					const userDoc = docSnap.data();
-					console.log(userDoc)
 					if (userDoc.role == 'advertiser'){
 						// go to advertiser dashbaord
 						history.push('/advertiser/dashboard/Home');

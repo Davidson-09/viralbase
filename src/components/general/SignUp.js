@@ -74,7 +74,8 @@ function SignUp({match}){
 						// set up the users profile in firestore
 						await setDoc(doc(db, 'users', user.uid), {
 							name: name, phoneNumber: phone, 
-							role: 'promoter', impressions:0
+							role: 'promoter', impressions:0,
+							promotions: [], earnings: 0
 						}).then(()=>{
 							history.push('/promoter/front/home ')
 						})

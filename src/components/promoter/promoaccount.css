@@ -1,0 +1,34 @@
+@media (min-width: 720px) and (min-height: 1024px) {
+
+	.promoaccount_subcontainer{
+		display: grid;
+		grid-template-columns: auto auto;
+		width: 29em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.promoaccount_adcontainer{
+		width: 25em;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+
+}
+
+@media (orientation: landscape) {
+
+	.promoaccount_subcontainer{
+		display: grid;
+		grid-template-columns: auto auto;
+		width: 54em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.promoaccount_adcontainer{
+		width: 50em;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+}

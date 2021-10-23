@@ -21,6 +21,10 @@
 		margin-left: auto;
 		margin-right: auto;
 	}
+
+	.promo_header_menuicon{
+		display: none !important;
+	}
 }
 
 @media (orientation: landscape) {
@@ -45,5 +49,9 @@
 		width: 50em !important;
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	.promo_header_menuicon{
+		display: none !important;
 	}
 }

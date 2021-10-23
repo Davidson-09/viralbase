@@ -5,7 +5,7 @@ function NewAlert({message, severity, displayAlert, setDisplayAlert}) {
 
 	if (displayAlert){
 		return(
-			<div style={{marginTop:'90vh', position:'fixed'}} >
+			<div style={{marginTop:'90vh', position:'fixed', zIndex:1}} >
 				<Alert onClose={() => {setDisplayAlert(false)}} severity={severity}>{message}</Alert>
 			</div>
 		)

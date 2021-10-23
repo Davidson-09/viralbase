@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+
 import SpinnerDiv from '../general/SpinnerDiv';
 import NewAlert from '../general/NewAlert';
 
@@ -7,40 +8,42 @@ import { doc, getDoc, collection, addDoc, setDoc,  updateDoc, increment, arrayUn
 import { ref, getDownloadURL } from "firebase/storage";
 import {  onAuthStateChanged } from "firebase/auth";
 
-function AdPage({match}) {
+function PromotionDetails({match}) {
 
 	const [progressDisplay, setProgressDisplay] = useState('none');
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
 
-
 	const [isVideo, setIsVideo] = useState(false);
 	const [mediaUrl, setMediaUrl] = useState();
-	const [promoId, setPromoId] = useState();
-	const [linkGenerated, setLinkGenerated] = useState(false);
-
+	const [promo, setPromo] = useState({id:'', data:{}});
 
 	const [ad, setAd] = useState({id:'', data:{}});
 
 	useEffect(()=>{
-		getAd();
-		loadMedia();
+		getPromo();
 	}, [])
 
-	const loadMedia =()=>{
-		getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
-			setMediaUrl(url)
-		})
+	const getPromo = async ()=>{
+		setProgressDisplay('block');
+		// get the promotion
+		// then get the related ad
+		const promoRef = doc(db, 'promotions', match.params.promotion);
+		const promoSnap = await getDoc(promoRef);
+
+		if (promoSnap.exists()) {
+			setPromo({id: promoSnap.id, data: promoSnap.data()});
+			getAd(promoSnap.data().ad)
+			setProgressDisplay('none');
+		}
 	}
 
-	const getAd = async ()=>{
-		setProgressDisplay('block');
-		 // get the ad from firestore
-		 const adRef = doc(db, 'ads', match.params.ad);
-		 const adSnap = await getDoc(adRef);
+	const getAd = async (id)=>{
+		const adRef = doc(db, 'ads', id);
+		const adSnap = await getDoc(adRef);
 
-		 if (adSnap.exists()) {
+		if (adSnap.exists()) {
 			setAd({id: adSnap.id, data: adSnap.data()});
 			if (adSnap.data().type === 'video'){
 				setIsVideo(true)
@@ -48,6 +51,7 @@ function AdPage({match}) {
 			setProgressDisplay('none');
 		}
 	}
+
 
 	const downloadMedia = async ()=>{
 		console.log('running')
@@ -67,72 +71,6 @@ function AdPage({match}) {
 			URL.revokeObjectURL(mediaUrl);
 		})
 
-	}
-
-	const generateLink =  async ()=>{
-		setProgressDisplay('block');
-		let generated = false;
-		// set up a promotion object in firestore
-		onAuthStateChanged(auth, async (user)=>{
-			// check if the promoter has already generated a link
-			const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-			if (userSnap.exists()) {
-				let promotions = userSnap.data().promotions;
-				if (promotions){
-					promotions.forEach((promo) => {
-						if (promo === ad.id){
-							generated = true
-						}
-					});
-				}
-			  }
-
-			  if (!generated){
-				  // create promorion objecct in firestore
-				const promoRef = doc(collection(db, "promotions"));
-				await setDoc(promoRef, {
-					ad: ad.id,
-					promoter: user.uid,
-					link: ad.data.link,
-					impressions: 0,
-					name: ad.data.name
-				  }).then(async ()=>{
-					  // update the number of promoters for the ad
-					  setPromoId(promoRef.id)
-					  const adRef = doc(db, "ads", ad.id);
-					  await updateDoc(adRef, {
-						promoters: increment(1)
-					  }).then(async ()=>{
-						  // add the ad to the promoter's list of promotions
-						  const promoterRef = doc(db, "users", user.uid);
-						  await updateDoc(promoterRef, {
-							promotions: arrayUnion(promoRef.id)
-						}).then(()=>{
-							setProgressDisplay('none');
-						});
-					  });
-					  
-					  setLinkGenerated(true);
-	
-				  }).catch((error)=>{
-					setProgressDisplay('none');
-					setAlertMessage(error.message);
-					setAlertSeverity('warning')
-					setDisplayAlert(true)
-				  });
-			  } else {
-				setProgressDisplay('none');
-				setAlertMessage('you have already generated a link for this ad');
-				setAlertSeverity('warning')
-				setDisplayAlert(true)
-			  }
-
-
-			
-		})
-
-		
 	}
 
 	return (
@@ -167,9 +105,7 @@ function AdPage({match}) {
 						</div>
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
-							{!linkGenerated && <button style={{fontSize:'1em', padding:"1em", borderRadius:'.6em', width:'10em',
-								border:'none', color:'white', backgroundColor:'var(--blueprimary)'}} onClick={generateLink}>generate link</button>}
-							{linkGenerated && <p style={{maxWidth:'70%', overflowX:'auto', color:"var(--blueptimary)"}}>{`viralbase.co/promotions/${promoId}`}</p>}
+								<p style={{overflow:'auto'}}>{`viralbase.co/${match.params.promotion}`}</p>
 						</div>
 				</div>
 
@@ -178,4 +114,4 @@ function AdPage({match}) {
 	)
 }
 
-export default AdPage
+export default PromotionDetails
