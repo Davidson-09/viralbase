@@ -19,6 +19,8 @@ function PromotionDetails({match}) {
 	const [mediaUrl, setMediaUrl] = useState();
 	const [promo, setPromo] = useState({id:'', data:{}});
 
+	const [domain, setDomain] = useState()
+
 	const [ad, setAd] = useState({id:'', data:{}});
 
 	useEffect(()=>{
@@ -31,6 +33,7 @@ function PromotionDetails({match}) {
 		// then get the related ad
 		const promoRef = doc(db, 'promotions', match.params.promotion);
 		const promoSnap = await getDoc(promoRef);
+		setDomain(window.location.host)
 
 		if (promoSnap.exists()) {
 			setPromo({id: promoSnap.id, data: promoSnap.data()});
@@ -105,7 +108,7 @@ function PromotionDetails({match}) {
 						</div>
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
-								<p style={{overflow:'auto'}}>{`viralbase.co/${match.params.promotion}`}</p>
+								<p style={{overflow:'auto'}}>{`${domain}/promotion/${match.params.promotion}`}</p>
 						</div>
 				</div>
 

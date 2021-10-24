@@ -16,6 +16,10 @@
 		margin-top: 2.5em;
 	}
 
+	.promo_menu{
+		display: none !important;
+	}
+
 	.search_container{
 		width: 25em !important;
 		margin-left: auto;

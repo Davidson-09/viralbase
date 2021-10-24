@@ -23,6 +23,7 @@ import PromoAccount from './components/promoter/PromoAccount';
 import Promotions from './components/promoter/Promotions';
 import PromotionDetails from './components/promoter/PromotionDetails';
 import Widthdraw from './components/promoter/Widthdraw';
+import Promotion from './components/general/Promotion';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
@@ -41,6 +42,7 @@ function App() {
 				<Route path='/signup/:role' component={SignUp}/>
 				<Route path='/changepassword' component={ChangePassword}/>
 				<Route path='/select' component={Select}/>
+				<Route path='/promotion/:promo' component={Promotion}/>
 			</Switch>
 
 			{/* advertiser links */}

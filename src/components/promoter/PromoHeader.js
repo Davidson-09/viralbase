@@ -41,16 +41,16 @@ function PromoHeader() {
 					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em'}}/>
 				</div>
 
-				<div className="ad_menu" style={{display:menuVisibility}}>
+				<div className="promo_menu" style={{display:menuVisibility}}>
 					<CloseRoundedIcon className='close-icon' style={{marginLeft:'5em', color:'var(--blueprimary)'}} onClick={hideMenu}/>
 					<Link to='/promoter/front/home' style={{textDecoration:'none', color:'black'}}>
-						<div className="ad_menu_item">
+						<div className="ad_menu_item" onClick={()=>{setMenuVisibility('none')}}>
 							<HomeRoundedIcon className="ad_menu_item_icon"/>
 							<p className="ad_menu_item_text">Home</p>
 						</div>
 					</Link>
-					<Link to='/promoter/front/account' style={{textDecoration:'none', color:'black'}}>
-					<div className="ad_menu_item">
+					<Link to='/promoter/front/account'  style={{textDecoration:'none', color:'black'}}>
+					<div className="ad_menu_item" onClick={()=>{setMenuVisibility('none')}}>
 						<PersonRoundedIcon className="ad_menu_item_icon"/>
 						<p className="ad_menu_item_text">account</p>
 					</div>
