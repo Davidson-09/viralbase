@@ -286,10 +286,10 @@ function AdCreation() {
 					
 					<div style={{width:'100%', paddingLeft:'1em', paddingRight:'1em'}}>
 						
-						<p style={{marginLeft:'1em'}}>Tag line <span style={{color:'#F6F6F6'}}>(optional)</span></p>
+						<p style={{marginLeft:'1em'}}>Tag line</p>
 					
 						<input type="text" style={{border:'none', width:'77%', backgroundColor:'#F6F6F6', padding:'1em',
-						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontSize:'1em'}}
+						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontSize:'1em'}} required
 						placeholder='e.g just do it' value={tagline} onChange={(e)=>{setTagline(e.target.value)}}/>
 					
 					</div>

@@ -43,7 +43,7 @@ function Promotions() {
 
 	function Promotion({promoId}){
 
-		const [promotion, setPromotion] = useState({id:'', data:{}})
+		const [promotion, setPromotion] = useState({id:'', data:{impressions:0}})
 		const history = useHistory();
 
 		useEffect(()=>{

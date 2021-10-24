@@ -6,6 +6,7 @@ import { db, storage, auth } from '../../fire';
 import { doc, getDoc, collection, addDoc, setDoc,  updateDoc, increment, arrayUnion } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
 import {  onAuthStateChanged } from "firebase/auth";
+import ReactPlayer from 'react-player'
 
 function AdPage({match}) {
 
@@ -95,7 +96,7 @@ function AdPage({match}) {
 					});
 				}
 				if (!generated){
-					// create promotion objecct in firestore
+					// create promotion object in firestore
 				  const promoRef = doc(collection(db, "promotions"));
 				  await setDoc(promoRef, {
 					  ad: ad.id,
@@ -150,12 +151,10 @@ function AdPage({match}) {
 
 				<div className='addetails_subcontainer' style={{backgroundColor:'white', Height:'30em', width:'80%', margin:'auto', marginTop:'17vh',
 					borderRadius:'1em', padding:"1em", opacity:'1', overflow:'auto'}}>
-						<div className='addetails_media_container' style={{width:'100%', backgroundColor:'#C4C4C4', margin:'auto', height:'10em'}}>
+						<div className='addetails_media_container' style={{width:'100%', margin:'auto', height:'10em'}}>
 							{!isVideo && <img alt='ad-img' src={mediaUrl} style={{width:'100%', opacity:'1', height:"100%"}} />}
 							{isVideo && 
-								<video width="240" height="200" controls>
-									<source src={mediaUrl} type="video/mp4"></source>
-								</video>}
+								<ReactPlayer url={mediaUrl} controls width='80%' height='100%'/>}
 						</div>
 						<div style={{}}>
 							<div >

@@ -8,6 +8,7 @@ import { db, storage, auth } from '../../fire';
 import { doc, getDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import { ref, getDownloadURL,  deleteObject } from "firebase/storage";
 import {  onAuthStateChanged } from "firebase/auth";
+import ReactPlayer from 'react-player'
 
 import './addetail.css';
 
@@ -32,10 +33,10 @@ function AdDetails({match}) {
 
 	useEffect(()=>{
 		getAd();
-		loadMedia();
+		
 	}, [])
 
-	const loadMedia =()=>{
+	const loadMedia =(ad)=>{
 		if (ad.data.type === 'photo'){
 			getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
 				setMediaUrl(url)
@@ -60,6 +61,7 @@ function AdDetails({match}) {
 
 		 if (adSnap.exists()) {
 			setAd({id: adSnap.id, data: adSnap.data()});
+			loadMedia({id: adSnap.id, data: adSnap.data()});
 			if (!(adSnap.data().active)){
 				setMode('Inactive');
 				setModeColor(red);
@@ -145,12 +147,10 @@ function AdDetails({match}) {
 
 				<div className='addetails_subcontainer' style={{backgroundColor:'white', Height:'30em', width:'80%', margin:'auto', marginTop:'17vh',
 					borderRadius:'1em', padding:"1em", opacity:'1', overflow:'auto'}}>
-						<div className='addetails_media_container' style={{width:'100%', backgroundColor:'#C4C4C4', margin:'auto', height:'10em'}}>
+						<div className='addetails_media_container' style={{width:'100%', margin:'auto', height:'10em'}}>
 							{!isVideo && <img alt='ad-img' src={mediaUrl} style={{width:'100%', opacity:'1', height:"100%"}} />}
 							{isVideo && 
-								<video width="240" height="200" controls>
-									<source src={mediaUrl} type="video/mp4"></source>
-								</video>}
+								<ReactPlayer url={mediaUrl} controls width='80%' height='100%'/>}
 						</div>
 						<div style={{}}>
 							<div >

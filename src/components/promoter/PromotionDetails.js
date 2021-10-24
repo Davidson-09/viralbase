@@ -7,6 +7,7 @@ import { db, storage, auth } from '../../fire';
 import { doc, getDoc, collection, addDoc, setDoc,  updateDoc, increment, arrayUnion } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
 import {  onAuthStateChanged } from "firebase/auth";
+import ReactPlayer from 'react-player'
 
 function PromotionDetails({match}) {
 
@@ -26,6 +27,24 @@ function PromotionDetails({match}) {
 	useEffect(()=>{
 		getPromo();
 	}, [])
+
+
+	const loadMedia =(ad)=>{
+		if (ad.data.type === 'photo'){
+			getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
+				setMediaUrl(url)
+			})
+		} else {
+			// it is a video
+			getDownloadURL(ref(storage, ad.data.mediaFile)).then(async (url)=>{
+			const media = await fetch(url);
+			const mediaBlob = await media.blob();
+			const mediaUrl = URL.createObjectURL(mediaBlob);
+			setMediaUrl(mediaUrl);
+			})
+		}
+		
+	}
 
 	const getPromo = async ()=>{
 		setProgressDisplay('block');
@@ -48,6 +67,7 @@ function PromotionDetails({match}) {
 
 		if (adSnap.exists()) {
 			setAd({id: adSnap.id, data: adSnap.data()});
+			loadMedia({id: adSnap.id, data: adSnap.data()})
 			if (adSnap.data().type === 'video'){
 				setIsVideo(true)
 			}
@@ -84,12 +104,10 @@ function PromotionDetails({match}) {
 
 				<div className='addetails_subcontainer' style={{backgroundColor:'white', Height:'30em', width:'80%', margin:'auto', marginTop:'17vh',
 					borderRadius:'1em', padding:"1em", opacity:'1', overflow:'auto'}}>
-						<div className='addetails_media_container' style={{width:'100%', backgroundColor:'#C4C4C4', margin:'auto', height:'10em'}}>
+						<div className='addetails_media_container' style={{width:'100%', margin:'auto', height:'10em'}}>
 							{!isVideo && <img alt='ad-img' src={mediaUrl} style={{width:'100%', opacity:'1', height:"100%"}} />}
 							{isVideo && 
-								<video width="240" height="200" controls>
-									<source src={mediaUrl} type="video/mp4"></source>
-								</video>}
+								<ReactPlayer url={mediaUrl} controls width='80%' height='100%'/>}
 						</div>
 						<div style={{}}>
 							<div >
