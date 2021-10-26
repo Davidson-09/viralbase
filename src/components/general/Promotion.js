@@ -61,7 +61,8 @@ function Promotion({match}) {
 						}).then( async ()=>{
 							const ref = doc(db, "users", promoSnap.data().promoter);
 							await updateDoc(ref, {
-								impressions: increment(1)
+								impressions: increment(1), 
+								earnings: increment(50)
 								// update the nummber of impressions for the ad
 							}).then( async ()=>{
 								const ref = doc(db, "ads", promoSnap.data().ad);
