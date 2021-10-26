@@ -86,8 +86,9 @@ function PromoAccount() {
 					<p style={{margin:0}}>{`N ${userData.earnings}`}</p>
 				</div>
 			</div>
-			<div className='promoaccount_adcontainer' style={{padding:'1em', margin:'1em', backgroundColor:'#FDF3F6', borderRadius:'.5em'}}>
-					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}} onClick={goToPromotionsPage}>Ads promoted</p>
+			<div className='promoaccount_adcontainer' style={{padding:'1em', margin:'1em', backgroundColor:'#FDF3F6', borderRadius:'.5em'}}
+				onClick={goToPromotionsPage}>
+					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}} >Ads promoted</p>
 					<p style={{margin:0}}>{promotionsNum} <span style={{fontWeight:'100', marginLeft:'1em'}}>click to see</span></p>
 			</div>
 			<div style={{textAlign:'center'}}>

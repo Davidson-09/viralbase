@@ -1,26 +1,33 @@
 import React, {useEffect, useState} from 'react'
+
 import AdCard from './AdCard'
 import SpinnerDiv from '../general/SpinnerDiv'
 
 import './listOfAds.css'
 
 import {db} from '../../fire'
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
-function ListOfAds() {
-	
+
+function Search({match}) {
+
 	const [ads, setAds] = useState();
+	const [m , setm] = useState(match)
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
-	const [status, setStatus] = useState('loading...');
+	const [status, setStatus] = useState('searching...');
+	const [empty, setEmpty] = useState(true)
 
 	useEffect(()=>{
 		getAds()
-	},[])
+		
+	},[m.params.searchterm])
+
 
 	const getAds = async ()=>{
 		setProgressDisplay('block')
-		const q = query(collection(db, "ads"), where("active", "==", true), limit(50));
+		setAds([])
+		const q = query(collection(db, "ads"), where( 'name', '==', m.params.searchterm, "active", "==", true));
 		const querySnapshot = await getDocs(q);
 		let adlist = [];
 		querySnapshot.forEach((doc) => {
@@ -31,12 +38,14 @@ function ListOfAds() {
 		  
 		  if (adlist.length > 0){
 			setAds(adlist);
-		  } else{
-			  setStatus('there are no ads at the moment')
+			setEmpty(false);
+		  } else {
+			  setStatus('there are no ads that match this search')
 		  }
 		  setProgressDisplay('none')
 		  console.log(adlist);
 	}
+
 
 	return (
 		<div>
@@ -47,11 +56,11 @@ function ListOfAds() {
 				{ads && ads.map(ad=>(
 					<AdCard key={ad.id} ad={ad}/>
 				))}
-				{!ads && <p>{status}</p>}
+				{empty && <p>{status}</p>}
 			</div>
 			</div>
 		</div>
 	)
 }
 
-export default ListOfAds
+export default Search

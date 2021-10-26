@@ -99,7 +99,7 @@ function Landing() {
 			<div className='landing_usp_div' style={{display:'flex', flexDirection:'column', alignContent:'center'}}>
 				<div className='landing_usp_text-div' style={{padding:'.5em', margin:'2.5em', backgroundColor:'#FDF3F6', borderRadius:'1em', maxWidth:'20em'}}>
 					<h2 className='landing_text' style={{textAlign:'center'}}>let others do the promoting for you</h2>
-					<p className='landing_text' style={{textAlign:'center'}}>viralbase provides you with an army of promoters ready to help you acheive the exposure you require</p>
+					<p className='landing_text' style={{textAlign:'center'}}>viralbase provides you with an army of promoters ready to help you get the exposure you require</p>
 					
 				</div>
 				<div className='landing_people_img' style={{display:'none'}}>

@@ -8,11 +8,14 @@ import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
 import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 
 function PromoHeader() {
 
+	const history = useHistory();
+
 	const [menuVisibility, setMenuVisibility] = useState('none');
+	const [searchterm, setSearchterm] = useState('');
 
 	const showMenu =()=>{
 		setMenuVisibility('block');
@@ -29,7 +32,7 @@ function PromoHeader() {
 					<div className="promo__header__right" style={{marginTop:'2.5em', color:'var(--blueprimary)'}}>
 						<MenuIcon onClick={showMenu} className='promo_header_menuicon'/>
 					</div>
-					<ul className='list' style={{display:'none'}}>
+					<ul className='list' style={{display:'none', listStyle:'none'}}>
 						<li><Link to='/promoter/front/home' style={{textDecoration:'none', color:'black'}}>Home</Link></li>
 						<li><Link to='/promoter/front/account' style={{textDecoration:'none', color:'black'}}>Account</Link></li>
 					</ul>
@@ -37,11 +40,13 @@ function PromoHeader() {
 				<div className='search_container'
 					style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
 				}}>
-					<input type='text'style={{flex:'1', backgroundColor:'#D2E0F2', border:'none'}} placeholder='search for ads...'/>
-					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em'}}/>
+					<input type='text'style={{flex:'1', backgroundColor:'#D2E0F2', border:'none'}} placeholder='search for ads...'
+						value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
+					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}
+							onClick={()=>{history.push(`/promoter/front/search/${searchterm}`)}}/>
 				</div>
 
-				<div className="promo_menu" style={{display:menuVisibility}}>
+				<div className="ad_menu" style={{display:menuVisibility}}>
 					<CloseRoundedIcon className='close-icon' style={{marginLeft:'5em', color:'var(--blueprimary)'}} onClick={hideMenu}/>
 					<Link to='/promoter/front/home' style={{textDecoration:'none', color:'black'}}>
 						<div className="ad_menu_item" onClick={()=>{setMenuVisibility('none')}}>

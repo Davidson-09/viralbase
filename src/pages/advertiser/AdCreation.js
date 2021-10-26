@@ -270,7 +270,7 @@ function AdCreation() {
 				
 						<input type="text" style={{border:'none', width:'77%', backgroundColor:'#F6F6F6', padding:'1em',
 						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontFamily:'Poppins, sans-serif', fontSize:'1em'}}
-						placeholder='e.g new fashion line' required value={adName} onChange={(e)=>{setAdName(e.target.value)}}/>
+						placeholder='the ad name should only be lower case letters' required value={adName} onChange={(e)=>{setAdName(e.target.value)}}/>
 					
 					</div>
 					

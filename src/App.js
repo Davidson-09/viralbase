@@ -17,10 +17,10 @@ import ListOfAds from './components/promoter/ListOfAds'
 import Landing from './Landing.js'
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import NewAlert from './components/general/NewAlert';
 import AdPage from './components/promoter/AdPage';
 import PromoAccount from './components/promoter/PromoAccount';
 import Promotions from './components/promoter/Promotions';
+import Search from './components/promoter/Search';
 import PromotionDetails from './components/promoter/PromotionDetails';
 import Widthdraw from './components/promoter/Widthdraw';
 import Promotion from './components/general/Promotion';
@@ -66,6 +66,7 @@ function App() {
 				<Route path='/promoter/front/home' component={ListOfAds}/>
 				<Route path='/promoter/front/account' component={PromoAccount}/>
 				<Route path='/promoter/front/promotions' component={Promotions}/>
+				<Route path='/promoter/front/search/:searchterm' component={Search} />
 			</Switch>
 			<Route path='/promoter/addetails/:ad' component={AdPage}/>
 			<Route path='/promoter/promotionDetails/:promotion' component={PromotionDetails}/>
