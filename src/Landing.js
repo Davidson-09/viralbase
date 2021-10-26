@@ -63,7 +63,7 @@ function Landing() {
 			<div className='landing_promoter_hero'>
 				<div>
 				<h1 className='landing_promoter_text' style={{textAlign:'center'}}>Promote products and <br/> <span style={{color:'var(--blueprimary)'}}>make easy money</span></h1>
-				<p className='landing_promoter_text' style={{textAlign:'center', marginTop:'-.3em', padding:'.5em'}}>viralbase providess one of the easiest ways to make money online,<br/>
+				<p className='landing_promoter_text' style={{textAlign:'center', marginTop:'-.3em', padding:'.5em'}}>viralbase provides one of the easiest ways to make money online,<br/>
 					you make money by sharing promotion links<br/> and getting people to interact with them</p>
 					<div className='landing_promoter_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
 					<button onClick={toPromoSignUp} style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
