@@ -35,7 +35,6 @@ function Promotion({match}) {
 				let ispresent = false;
 				// check if the device ip address already exists in the promotion's array of addresses
 				if (promoSnap.data().addresses){
-					console.log('checking ip...')
 					promoSnap.data().addresses.forEach((address)=>{
 						if (address === ip){
 							ispresent = true;
@@ -72,7 +71,8 @@ function Promotion({match}) {
 								}).then( async ()=>{
 									const ref = doc(db, "users", promoSnap.data().advertiser);
 									await updateDoc(ref, {
-										impressions: increment(1)
+										totalImpressions: increment(1),
+										availableImpressions: increment(-1)
 										// update the nummber of impressions for the advertiser
 									}).then(()=>{
 										console.log('redirecting to promo link')
