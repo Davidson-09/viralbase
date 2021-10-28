@@ -40,9 +40,9 @@ function Search({searchterm}) {
 			setEmpty(false);
 		  } else {
 			  setStatus('there are no ads that match this search')
+			  setEmpty(true);
 		  }
 		  setProgressDisplay('none')
-		  console.log(adlist);
 	}
 
 
