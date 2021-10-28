@@ -9,10 +9,9 @@ import {db} from '../../fire'
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 
-function Search({match}) {
+function Search({searchterm}) {
 
 	const [ads, setAds] = useState();
-	const [m , setm] = useState(match)
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [status, setStatus] = useState('searching...');
@@ -21,13 +20,13 @@ function Search({match}) {
 	useEffect(()=>{
 		getAds()
 		
-	},[m.params.searchterm])
+	},[searchterm])
 
 
 	const getAds = async ()=>{
 		setProgressDisplay('block')
 		setAds([])
-		const q = query(collection(db, "ads"), where( 'name', '==', m.params.searchterm, "active", "==", true));
+		const q = query(collection(db, "ads"), where( 'name', '==', searchterm), where("active", "==", true));
 		const querySnapshot = await getDocs(q);
 		let adlist = [];
 		querySnapshot.forEach((doc) => {

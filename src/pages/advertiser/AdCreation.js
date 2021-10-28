@@ -59,7 +59,7 @@ function AdCreation() {
 							videoUrl=snapshot.metadata.fullPath;
 							// set firestore object 
 							let newAd = {
-								name: adName,
+								name: adName.toLowerCase(),
 								description: description,
 								tagline: tagline,
 								link: adLink,
@@ -105,7 +105,7 @@ function AdCreation() {
 					uploadBytes(adRef, media).then((snapshot)=>{
 						photoUrl = snapshot.metadata.fullPath;
 						let newAd = {
-							name: adName,
+							name: adName.toLowerCase(),
 							description: description,
 							tagline: tagline,
 							link: adLink,

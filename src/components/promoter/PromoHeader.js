@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 
 import './promoHeader.css';
@@ -40,9 +40,9 @@ function PromoHeader() {
 				<div style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
 					margin:'auto', maxWidth:'40em'}}>
 					<input type='text'style={{width:'90%', backgroundColor:'#D2E0F2', border:'none',
-							padding:'1em', fontSize:'1em'}}/>
+							padding:'1em', fontSize:'1em'}} value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
 					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}
-							onClick={()=>{history.push(`/promoter/front/search/${searchterm}`)}}/>
+							onClick={()=>{history.push(`/promoter/search/${searchterm}`)}}/>
 				</div>
 
 				<div className="ad_menu" style={{display:menuVisibility}}>
