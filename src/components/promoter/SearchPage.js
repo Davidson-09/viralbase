@@ -16,7 +16,7 @@ function SearchPage({match}) {
 	const history = useHistory();
 
 	const [menuVisibility, setMenuVisibility] = useState('none');
-	const [searchterm, setSearchterm] = useState(match.params.searchterm);
+	const [searchterm, setSearchterm] = useState(match.params.searchterm.toLowerCase());
 
 	const showMenu =()=>{
 		setMenuVisibility('block');
