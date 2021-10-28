@@ -43,8 +43,7 @@ function SearchPage({match}) {
 						margin:'auto', maxWidth:'40em'}}>
 						<input type='text'style={{width:'90%', backgroundColor:'#D2E0F2', border:'none',
 								padding:'1em', fontSize:'1em'}} value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
-						<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}
-								onClick={()=>{history.push(`/promoter/front/search/${searchterm}`)}}/>
+						<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}/>
 					</div>
 
 					<div className="ad_menu" style={{display:menuVisibility}}>
@@ -63,7 +62,7 @@ function SearchPage({match}) {
 						</Link>
 					</div>
 			</div>
-			<Search searchterm={searchterm}/>
+			<Search searchterm={searchterm.toLowerCase()}/>
 		</div>
 	)
 }
