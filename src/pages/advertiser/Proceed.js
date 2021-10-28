@@ -128,7 +128,7 @@ function Proceed() {
 						type='number' placeholder='number of desired impressions: min 10' value={impressions} onChange={updateImpressions}/>
 						
 						<div style={{textAlign:'center'}}>
-						<button type='submit' style={{width:'20em', marginTop:'1em',
+						<button type='submit' style={{width:'10em', marginTop:'1em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',
 						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}} onClick={pay} >Pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
 						</div>
