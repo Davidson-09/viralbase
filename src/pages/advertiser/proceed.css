@@ -1,35 +1,13 @@
 @media (min-width: 720px) and (min-height: 1024px) {
-
-	.proceed_form_container{
-		width: 100% !important;
-		justify-content: center !important;
+	.proceed_subcontainer{
+		max-width: 30em !important;
+		margin: auto !important;
 	}
-	
-	.proceed_input{
-		width: 100% !important;
-	}
-
-	.proceed_btn{
-		margin: none !important;
-		margin-left: 9em !important;
-	}
-
 }
 
 @media (orientation: landscape) {
-
-	.proceed_form_container{
-		width: 100% !important;
-		justify-content: center !important;
+	.proceed_subcontainer{
+		max-width: 30em !important;
+		margin: auto !important;
 	}
-	
-	.proceed_input{
-		width: 100% !important;
-	}
-
-	.proceed_btn{
-		margin: none !important;
-		margin-left: 9em !important;
-	}
-	
 }

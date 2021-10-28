@@ -24,6 +24,7 @@ import Search from './components/promoter/Search';
 import PromotionDetails from './components/promoter/PromotionDetails';
 import Widthdraw from './components/promoter/Widthdraw';
 import Promotion from './components/general/Promotion';
+import PageNotFound from './components/general/PageNotFound';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
@@ -35,7 +36,6 @@ function App() {
   return (
 	  <Router>
 		<div className="App" style={{}}>
-
 			<Route path='/' exact component={Landing}/>
 			<Switch>
 				<Route path='/login' component={Login}/>
@@ -43,6 +43,8 @@ function App() {
 				<Route path='/changepassword' component={ChangePassword}/>
 				<Route path='/select' component={Select}/>
 				<Route path='/promotion/:promo' component={Promotion}/>
+				<Route path='/pagenotfound' component={PageNotFound}/>
+				
 			</Switch>
 
 			{/* advertiser links */}
@@ -71,10 +73,9 @@ function App() {
 			<Route path='/promoter/addetails/:ad' component={AdPage}/>
 			<Route path='/promoter/promotionDetails/:promotion' component={PromotionDetails}/>
 			<Route path='/promoter/withdraw/:user' component={Widthdraw}/>
-
+			
 		</div>
 	  </Router>
-    
   );
 }
 

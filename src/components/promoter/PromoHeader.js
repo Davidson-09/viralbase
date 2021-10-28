@@ -37,11 +37,10 @@ function PromoHeader() {
 						<li><Link to='/promoter/front/account' style={{textDecoration:'none', color:'black'}}>Account</Link></li>
 					</ul>
 				</div>
-				<div className='search_container'
-					style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
-				}}>
-					<input type='text'style={{flex:'1', backgroundColor:'#D2E0F2', border:'none'}} placeholder='search for ads...'
-						value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
+				<div style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
+					margin:'auto', maxWidth:'40em'}}>
+					<input type='text'style={{width:'90%', backgroundColor:'#D2E0F2', border:'none',
+							padding:'1em', fontSize:'1em'}}/>
 					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}
 							onClick={()=>{history.push(`/promoter/front/search/${searchterm}`)}}/>
 				</div>

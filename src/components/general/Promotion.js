@@ -4,8 +4,11 @@ import { CircularProgress } from '@mui/material'
 import { db} from '../../fire'
 import { doc, getDoc, updateDoc, increment, arrayUnion } from "firebase/firestore";
 import axios from 'axios'
+import {useHistory} from 'react-router-dom';
 
 function Promotion({match}) {
+
+	const history = useHistory();
 
 	useEffect(()=>{
 		execute();
@@ -22,13 +25,11 @@ function Promotion({match}) {
 		const promoSnap = await getDoc(promoRef);
 		console.log('started')
 		if (promoSnap.exists()) {
-			console.log('promosnap!')
 			// get the related advertiser
 			console.log(promoSnap.data())
 			const adRef = doc(db, 'users',promoSnap.data().advertiser);
 			const adSnap = await getDoc(adRef);
 			if (adSnap.exists()){
-				console.log('gotten related ad')
 				// get the device ip address
 				const res = await axios.get('https://geolocation-db.com/json/');
 				const ip = res.data.IPv4;
@@ -38,13 +39,11 @@ function Promotion({match}) {
 					promoSnap.data().addresses.forEach((address)=>{
 						if (address === ip){
 							ispresent = true;
-							console.log('found a match')
 						}
 					})
 				}
 				
 				if ( ispresent){
-					console.log('moving straight on to promotional link')
 					window.location.replace(`https://${promoSnap.data().link}`);
 				} else {
 					// check if the adertiser has enough impressions
@@ -75,9 +74,7 @@ function Promotion({match}) {
 										availableImpressions: increment(-1)
 										// update the nummber of impressions for the advertiser
 									}).then(()=>{
-										console.log('redirecting to promo link')
 										// redirect to the promotions adlink
-										console.log('moving straight on to promotional link')
 									window.location.replace(`https://${promoSnap.data().link}`);	
 									})
 								})
@@ -92,16 +89,16 @@ function Promotion({match}) {
 							active: false
 						}).then(()=>{
 							//redirect to 404 page
-							console.log('404')
+							history.push('/pagenotfound')
 						})
 					}
 				}
 				
 			} else {
-				console.log('redirecting to 404 page')
+				history.push('/pagenotfound')
 			}
 		} else {
-			console.log('promo does not exist')
+			history.push('/pagenotfound')
 		}
 	}
 

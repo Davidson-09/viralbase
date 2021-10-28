@@ -253,53 +253,51 @@ function AdCreation() {
 	  }
 
 	return (
-		<div className="adcreation_container" style={{backgroundColor:'var(--blueprimary)', display: 'flex', justifyContent:'center',
-		 alignItems: 'center', margin:'-1em', width:'100%', minHeight:'100%', position:'absolute'}}>
+		<div style={{backgroundColor:'var(--blueprimary)', minHeight:'100vh', margin:'-1em', padding:'2em'}}>
 			<SpinnerDiv show={progressDisplay} />
 			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
-			<div className="adcreation_subcontainer" style={{backgroundColor:'white', width:'85%', height:'auto',
-			display:'flex', flexDirection:'column', alignItems: 'center', marginTop:'1em', marginBottom:'1em'}}  >
+			<div className="adcreation_form_div" style={{backgroundColor:'white', paddingTop:'2em', margin:'auto'}}  >
 				
-				<p style={{fontSize:'2em', fontWeight:'bold', color:'var(--blueprimary)'}}>Create new ad</p>
+				<p style={{fontSize:'2em', fontWeight:'bold', color:'var(--blueprimary)', textAlign:'center'}}>Create new ad</p>
 				
-				<form className='adcreation_form' style={{width:'100%'}} onSubmit={uploadAd}>
+				<form style={{padding:'1em'}} onSubmit={uploadAd}>
 					
-					<div style={{width:'100%', paddingLeft:'1em', paddingRight:'1em'}}>
+					<div style={{}}>
 				
-						<p style={{marginLeft:'1em'}}>Name the ad</p>
+						<p style={{marginBottom:'-.07em'}}>Name the ad</p>
 				
-						<input type="text" style={{border:'none', width:'77%', backgroundColor:'#F6F6F6', padding:'1em',
-						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontFamily:'Poppins, sans-serif', fontSize:'1em'}}
+						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em'}}
 						placeholder='the ad name should only be lower case letters' required value={adName} onChange={(e)=>{setAdName(e.target.value)}}/>
 					
 					</div>
 					
-					<div style={{width:'100%', paddingLeft:'1em', paddingRight:'1em'}}>
+					<div style={{}}>
 					
-						<p style={{marginLeft:'1em'}}>Description</p>
+						<p style={{marginBottom:'-.07em'}}>Description</p>
 						
-						<textarea type="text" style={{border:'none', width:'77%', height:'10em', backgroundColor:'#F6F6F6', padding:'1em',
-						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontSize:'1em'}}
+						<textarea type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em', height:'20em'}}
 						placeholder='describe the product or service you wish to promote' value={description} onChange={(e)=>{setDescription(e.target.value)}}/>
 					
 					</div>
 					
-					<div style={{width:'100%', paddingLeft:'1em', paddingRight:'1em'}}>
+					<div style={{}}>
 						
-						<p style={{marginLeft:'1em'}}>Tag line</p>
+						<p style={{marginBottom:'-.07em'}}>Tagline</p>
 					
-						<input type="text" style={{border:'none', width:'77%', backgroundColor:'#F6F6F6', padding:'1em',
-						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontSize:'1em'}} required
+						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em'}} required
 						placeholder='e.g just do it' value={tagline} onChange={(e)=>{setTagline(e.target.value)}}/>
 					
 					</div>
 					
-					<div style={{width:'100%', paddingLeft:'1em', paddingRight:'1em'}}>
+					<div style={{}}>
 					
-						<p style={{marginLeft:'1em'}}>Ad link</p>
+						<p style={{marginBottom:'-.07em'}}>Ad link</p>
 					
-						<input type="text" style={{border:'none', width:'77%', backgroundColor:'#F6F6F6', padding:'1em',
-						marginLeft:'1em', marginTop:'-.5em',borderRadius:'.5em', fontSize:'1em'}}
+						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em'}}
 						placeholder='add a link that will be shared by promoters' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
 				
 					</div>
