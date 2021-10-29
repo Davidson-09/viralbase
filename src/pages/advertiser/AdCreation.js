@@ -298,7 +298,7 @@ function AdCreation() {
 					
 						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}}
-						placeholder='add a link that will be shared by promoters' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
+						placeholder='e.g www.myhustle.com/shop' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
 				
 					</div>
 					{displaybutton && (
