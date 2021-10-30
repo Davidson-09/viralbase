@@ -3,6 +3,7 @@ import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
 
 import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
+import { usePaystackPayment } from 'react-paystack';
 
 import {auth, db} from '../../fire'
 import { onAuthStateChanged } from "firebase/auth";
@@ -31,22 +32,22 @@ function Proceed() {
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
 
-	const config = {
-		public_key: 'FLWPUBK_TEST-3c04ac41964e14544df0f3ec7b4068ef-X',
-		tx_ref: Date.now(),
-		amount: price,
-		currency: 'NGN',
-		payment_options: 'card,mobilemoney,ussd',
-		customer: {
-		  email: user.email,
-		  uid: user.uid
-		},
-		customizations: {
-		  title: 'viralbase'
-		},
-	  };
+	// const config = {
+	// 	public_key: 'FLWPUBK_TEST-3c04ac41964e14544df0f3ec7b4068ef-X',
+	// 	tx_ref: Date.now(),
+	// 	amount: price,
+	// 	currency: 'NGN',
+	// 	payment_options: 'card,mobilemoney,ussd',
+	// 	customer: {
+	// 	  email: user.email,
+	// 	  uid: user.uid
+	// 	},
+	// 	customizations: {
+	// 	  title: 'viralbase'
+	// 	},
+	//   };
 
-		const handleFlutterPayment = useFlutterwave(config);
+		//const handleFlutterPayment = useFlutterwave(config);
 
 	useEffect(()=>{
 		getUser();
@@ -78,28 +79,64 @@ function Proceed() {
 		}).then(()=>{
 			history.push('/advertiser/dashboard/Home');
 		}).catch((error)=>{
-				setAlertMessage(error.message);
+				setAlertMessage(error.message.replace('Firebase', ''));
 				setDisplayAlert(true);
 				setAlertSeverity('warning');
 				setProgressDisplay(true);
 		});
 	}
 
-	const pay =(e)=>{
+	// const pay =(e)=>{
 
+	// 	e.preventDefault();
+	// 	if (impressions >= 10){
+	// 		handleFlutterPayment({
+	// 			callback: (response) => {
+	// 				console.log(response);
+	// 			   setAlertMessage('successful');
+	// 			   setDisplayAlert(true);
+	// 			   setAlertSeverity('success');
+	// 			   addImpressions();
+	// 				closePaymentModal() // this will close the modal programmatically
+	// 			},
+	// 			onClose: () => {},
+	// 		});
+	// 	} else{
+	// 		setAlertMessage('you cannot purhase less than 10 impressions');
+	// 		setDisplayAlert(true);
+	// 		setAlertSeverity('warning');
+	// 	}
+
+	// }
+
+
+	//---------------------------------------------------------------------------------
+	//paystack implementation
+	const config = {
+		reference: (new Date()).getTime().toString(),
+		amount: price*100,
+		publicKey: 'pk_test_84b8e0f1f3b90329d2a236087494e5c09c021eda',
+		email: user.email,
+	 	uid: user.uid
+	};
+
+	const onSuccess = (reference) => {
+		// Implementation for whatever you want to do with reference and after success call.
+		addImpressions();
+		console.log(reference);
+	  };
+	  
+	const onClose = () => {
+	// implementation for  whatever you want to do when the Paystack dialog closed.
+	console.log('closed')
+	}
+
+	const initializePayment = usePaystackPayment(config);
+
+	const pay2 =(e)=>{
 		e.preventDefault();
 		if (impressions >= 10){
-			handleFlutterPayment({
-				callback: (response) => {
-					console.log(response);
-				   setAlertMessage('successful');
-				   setDisplayAlert(true);
-				   setAlertSeverity('success');
-				   addImpressions();
-					closePaymentModal() // this will close the modal programmatically
-				},
-				onClose: () => {},
-			});
+			initializePayment(onSuccess, onClose)
 		} else{
 			setAlertMessage('you cannot purhase less than 10 impressions');
 			setDisplayAlert(true);
@@ -124,13 +161,13 @@ function Proceed() {
 					<div>
 
 						<input style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}}
+							padding:'1em', fontSize:'1em', textAlign:'center'}}
 						type='number' placeholder='number of desired impressions: min 10' value={impressions} onChange={updateImpressions}/>
 						
 						<div style={{textAlign:'center'}}>
 						<button type='submit' style={{width:'10em', marginTop:'1em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',
-						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}} onClick={pay} >Pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
+						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}} onClick={pay2} >Pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
 						</div>
 					</div>
 
