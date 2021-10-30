@@ -48,7 +48,7 @@ function Login() {
 			setProgressDisplay('none');
 			setDisplayAlert(true);
 			setAlertSeverity('warning');
-			setAlertMessage(error.message);
+			setAlertMessage(error.message.replace('Firebase', ''));
 		})
 	}
 

@@ -85,13 +85,13 @@ function AdCreation() {
 							setProgressDisplay('none');
 							setDisplayAlert(true);
 							setAlertSeverity('warning');
-							setAlertMessage(error.message);
+							setAlertMessage(error.message.replace('firebase', ''));
 						})
 					}).catch((error)=>{
 						setProgressDisplay('none');
 						setDisplayAlert(true);
 						setAlertSeverity('warning');
-						setAlertMessage(error.message);
+						setAlertMessage(error.message.replace('Firebase', ''));
 					})
 					});
 					

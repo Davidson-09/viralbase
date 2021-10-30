@@ -24,6 +24,8 @@ function Home() {
 	const [userData, setUserData] = useState({});
 	const [progressDisplay, setProgressDisplay] = useState('none')
 
+	const [showPurchasePrompt, setShowPurchasePrompt] = useState(false);
+
 
 	useEffect(()=>{
 		getUserData();
@@ -38,7 +40,7 @@ function Home() {
 			if (docSnap.exists()) {
 				const userDoc = docSnap.data();
 				setUserData(userDoc);
-				getAds(user.uid);
+				getAds(user.uid, docSnap.data().availableImpressions);
 				setProgressDisplay('none');
 			} else{
 				setProgressDisplay('none');
@@ -46,7 +48,7 @@ function Home() {
 		})
 	}
 
-	const getAds = async (uid)=>{
+	const getAds = async (uid, num)=>{
 		// get the users ads
 		const adsRef = collection(db, "ads");
 		const q = query(adsRef, where("owner", "==", uid));
@@ -57,6 +59,9 @@ function Home() {
 			let ad = {id: doc.id, data: doc.data()};
 			ads.push(ad);
 		});
+		if (num == 0 && ads.length >0){
+			setShowPurchasePrompt(true)
+		}
 		setAdList(ads)
 	}
 
@@ -97,7 +102,9 @@ function Home() {
 						</div>
 					</div>
 				</div>
-
+				{showPurchasePrompt && <p style={{textAlign:'center', color:'red',
+					fontSize:'.7em'}}>buy impressions to keep your ads visible for promotion</p> }
+				
 				<div style={{display:'flex', justifyContent:'space-between', marginTop:'1em', paddingLeft:'1em',
 					paddingRight:'1em'}}>
 					<p>Your ads</p>

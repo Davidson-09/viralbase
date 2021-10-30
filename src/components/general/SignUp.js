@@ -62,7 +62,7 @@ function SignUp({match}){
 				setProgressDisplay('none');
 				setDisplayAlert(true);
 				setAlertSeverity('warning');
-				setAlertMessage(error.message);
+				setAlertMessage(error.message.replace('Firebase', ''));
 			})
 		} else {
 			// do something for promoter
@@ -86,7 +86,7 @@ function SignUp({match}){
 				setProgressDisplay('none');
 				setDisplayAlert(true);
 				setAlertSeverity('warning');
-				setAlertMessage(error.message);
+				setAlertMessage(error.message.replace('Firebase', ''));
 			})
 		}
 	}
