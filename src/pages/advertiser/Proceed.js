@@ -115,7 +115,7 @@ function Proceed() {
 	const config = {
 		reference: (new Date()).getTime().toString(),
 		amount: price*100,
-		publicKey: 'pk_test_84b8e0f1f3b90329d2a236087494e5c09c021eda',
+		publicKey: 'pk_live_b18f3f98c9492f2211ee0991cb6f13c51d54b5df',
 		email: user.email,
 	 	uid: user.uid
 	};

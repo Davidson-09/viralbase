@@ -39,8 +39,9 @@ function Landing() {
 					<img src={logo} alt='logo' style={{width:'2em', height:'3em'}}/>
 					<p style={{color:'var(--blueprimary)', margin:0, fontWeight:'bold', fontSize:'1.5em', marginLeft:'.5em' }}>viralbase</p>
 				</div>
-				<button style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'white',
-					borderRadius:'.5em', width:'10em', height:'3em'}} onClick={toLogin}>log in</button>
+				<button style={{marginTop:'.7em', marginRight:'1em', backgroundColor:'white',
+					borderRadius:'.5em', border:"none", fontSize:'1.1em',
+					fontWeight:'bold'}} onClick={toLogin}>log in</button>
 				<button className='landing_signin_btn' style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'var(--blueprimary)',
 					borderRadius:'.5em', width:'10em', height:'3em', border:'none',
 					color:'white', fontWeight:'bold', display:'none'}} onClick={toSelectPageSignUp}>Sign up</button>
