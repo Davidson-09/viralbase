@@ -6,6 +6,7 @@ import Currency from './res/Currency'
 import People from './res/People'
 import promoters from './res/promoters.svg'
 import './landing.css'
+import logo from './logo.svg'
 
 import { useHistory} from 'react-router-dom';
 
@@ -34,7 +35,10 @@ function Landing() {
 		<div className='landing_container' style={{}}>
 			<div className='landing_header' style={{display:'flex', justifyContent:'space-between', paddingLeft:'2em',
 				paddingRight:'2em'}}>
-				<p style={{color:'var(--blueprimary)', fontWeight:'bold', fontSize:'1.5em', flex:'1'}}>viralbase</p>
+				<div style={{display:'flex', flex:'1', marginTop:'1.5em'}}>
+					<img src={logo} alt='logo' style={{width:'2em', height:'3em'}}/>
+					<p style={{color:'var(--blueprimary)', margin:0, fontWeight:'bold', fontSize:'1.5em', marginLeft:'1em' }}>viralbase</p>
+				</div>
 				<button style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'white',
 					borderRadius:'.5em', width:'10em', height:'3em'}} onClick={toLogin}>log in</button>
 				<button className='landing_signin_btn' style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'var(--blueprimary)',
