@@ -49,7 +49,7 @@ function Landing() {
 						Get attention for <br/>
 						<span style={{color:'var(--blueprimary)'}}> your hustle</span>
 					</h1>
-					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> gather attention for their<br/> goods and services</p>
+					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> promote their goods, services, music,<br/> movies, events and so much more.</p>
 					<div className='landing_cta_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
 					<button onClick={toAdSignUp} style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
 					 border:'none', color:'white', fontWeight:'bold', fontSize:'1em'}}>create free advertiser account</button>
