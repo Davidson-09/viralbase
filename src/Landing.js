@@ -37,7 +37,7 @@ function Landing() {
 				paddingRight:'2em'}}>
 				<div style={{display:'flex', flex:'1', marginTop:'1.5em'}}>
 					<img src={logo} alt='logo' style={{width:'2em', height:'3em'}}/>
-					<p style={{color:'var(--blueprimary)', margin:0, fontWeight:'bold', fontSize:'1.5em', marginLeft:'1em' }}>viralbase</p>
+					<p style={{color:'var(--blueprimary)', margin:0, fontWeight:'bold', fontSize:'1.5em', marginLeft:'.5em' }}>viralbase</p>
 				</div>
 				<button style={{marginTop:'1.7em', marginRight:'1em', backgroundColor:'white',
 					borderRadius:'.5em', width:'10em', height:'3em'}} onClick={toLogin}>log in</button>
