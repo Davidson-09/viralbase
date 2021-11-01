@@ -26,6 +26,7 @@ function AdDetails({match}) {
 	const [buttonText, setButtonText] = useState('deactivate');
 	const [isVideo, setIsVideo] = useState(false);
 	const [mediaUrl, setMediaUrl] = useState();
+	const [active, setActive] = useState();
 
 	
 
@@ -61,6 +62,7 @@ function AdDetails({match}) {
 
 		 if (adSnap.exists()) {
 			setAd({id: adSnap.id, data: adSnap.data()});
+			setActive(adSnap.data().active)
 			loadMedia({id: adSnap.id, data: adSnap.data()});
 			if (!(adSnap.data().active)){
 				setMode('Inactive');
@@ -115,7 +117,7 @@ function AdDetails({match}) {
 	}
 
 	const changeMode = async ()=>{
-		if (ad.data.active){
+		if (active){
 			// if the ad is active deactivate it
 			setProgressDisplay('block');
 			await updateDoc(doc(db, "ads", ad.id), {
@@ -126,6 +128,8 @@ function AdDetails({match}) {
 			  setButtonText('activate');
 			  setMode('inactive')
 			  setProgressDisplay('none');
+			  setActive(false)
+			  console.log('deactivated');
 		} else{
 			setProgressDisplay('block');
 			await updateDoc(doc(db, "ads", ad.id), {
@@ -136,6 +140,8 @@ function AdDetails({match}) {
 			  setButtonText('deactivate');
 			  setMode('active')
 			  setProgressDisplay('none');
+			  setActive(true)
+			  console.log('activated')
 		}
 		
 	}
