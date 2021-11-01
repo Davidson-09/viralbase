@@ -139,8 +139,13 @@ function AdPage({match}) {
 				}
 			  }
 		})
+	}
 
-		
+	const copyLink =()=>{
+		navigator.clipboard.writeText(`${domain}/promotion/${promoId}`)
+		setAlertMessage('link copied');
+		setAlertSeverity('success')
+		setDisplayAlert(true)
 	}
 
 	return (
@@ -172,10 +177,11 @@ function AdPage({match}) {
 							<p style={{width:'100%', overflowY:'auto', maxHeight:"2.5em"}} >{ad.data.tagline}</p>
 						</div>
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
-							marginTop:'2em'}}>
+							marginTop:'2em', marginBottom:'1em'}}>
 							{!linkGenerated && <button style={{fontSize:'1em', padding:"1em", borderRadius:'.6em', width:'10em',
 								border:'none', color:'white', backgroundColor:'var(--blueprimary)'}} onClick={generateLink}>generate link</button>}
 							{linkGenerated && <p style={{maxWidth:'70%', overflowX:'auto', color:"var(--blueptimary)"}}>{`${domain}/promotion/${promoId}`}</p>}
+							{linkGenerated && <button onClick={copyLink}>copy link</button>}
 						</div>
 				</div>
 

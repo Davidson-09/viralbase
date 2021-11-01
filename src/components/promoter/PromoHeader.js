@@ -39,8 +39,10 @@ function PromoHeader() {
 				</div>
 				<div style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
 					margin:'auto', maxWidth:'40em'}}>
-					<input type='text'style={{width:'90%', backgroundColor:'#D2E0F2', border:'none',
-							padding:'1em', fontSize:'1em'}} value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
+					<form style={{width:'100%', height:"inherit"}} onSubmit={()=>{history.push(`/promoter/search/${searchterm}`)}}>
+						<input type='text'style={{width:'90%', backgroundColor:'#D2E0F2', border:'none',
+							padding:'.5em', fontSize:'1em'}} value={searchterm} onChange={(e)=>{setSearchterm(e.target.value)}}/>
+					</form>
 					<SearchRoundedIcon style={{color:'var(--blueprimary)', height:'1.5em', width:'1.5em', fontSize:'1em'}}
 							onClick={()=>{history.push(`/promoter/search/${searchterm}`)}}/>
 				</div>

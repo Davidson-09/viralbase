@@ -23,7 +23,6 @@ function Promotion({match}) {
 		//get the related promotion
 		const promoRef = doc(db, 'promotions', match.params.promo);
 		const promoSnap = await getDoc(promoRef);
-		console.log('started')
 		if (promoSnap.exists()) {
 			// get the related advertiser
 			console.log(promoSnap.data())
@@ -49,7 +48,6 @@ function Promotion({match}) {
 					// check if the adertiser has enough impressions
 					if (adSnap.data().availableImpressions > 0){
 						// increment the impressions of the promotion by 1
-						console.log('updating promotion')
 						const ref = doc(db, "promotions", match.params.promo);
 						await updateDoc(ref, {
 							impressions: increment(1),

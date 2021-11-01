@@ -2,14 +2,13 @@ import React, {useState, useEffect} from 'react'
 import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
 
-import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 import { usePaystackPayment } from 'react-paystack';
 
 import {auth, db} from '../../fire'
 import { onAuthStateChanged } from "firebase/auth";
 import { updateDoc, doc, increment } from '@firebase/firestore';
 
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import './proceed.css'
 
@@ -31,23 +30,6 @@ function Proceed() {
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
-
-	// const config = {
-	// 	public_key: 'FLWPUBK_TEST-3c04ac41964e14544df0f3ec7b4068ef-X',
-	// 	tx_ref: Date.now(),
-	// 	amount: price,
-	// 	currency: 'NGN',
-	// 	payment_options: 'card,mobilemoney,ussd',
-	// 	customer: {
-	// 	  email: user.email,
-	// 	  uid: user.uid
-	// 	},
-	// 	customizations: {
-	// 	  title: 'viralbase'
-	// 	},
-	//   };
-
-		//const handleFlutterPayment = useFlutterwave(config);
 
 	useEffect(()=>{
 		getUser();
@@ -86,29 +68,6 @@ function Proceed() {
 		});
 	}
 
-	// const pay =(e)=>{
-
-	// 	e.preventDefault();
-	// 	if (impressions >= 10){
-	// 		handleFlutterPayment({
-	// 			callback: (response) => {
-	// 				console.log(response);
-	// 			   setAlertMessage('successful');
-	// 			   setDisplayAlert(true);
-	// 			   setAlertSeverity('success');
-	// 			   addImpressions();
-	// 				closePaymentModal() // this will close the modal programmatically
-	// 			},
-	// 			onClose: () => {},
-	// 		});
-	// 	} else{
-	// 		setAlertMessage('you cannot purhase less than 10 impressions');
-	// 		setDisplayAlert(true);
-	// 		setAlertSeverity('warning');
-	// 	}
-
-	// }
-
 
 	//---------------------------------------------------------------------------------
 	//paystack implementation
@@ -133,7 +92,7 @@ function Proceed() {
 
 	const initializePayment = usePaystackPayment(config);
 
-	const pay2 =(e)=>{
+	const pay =(e)=>{
 		e.preventDefault();
 		if (impressions >= 10){
 			initializePayment(onSuccess, onClose)
@@ -167,7 +126,7 @@ function Proceed() {
 						<div style={{textAlign:'center'}}>
 						<button type='submit' style={{width:'10em', marginTop:'1em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',
-						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}} onClick={pay2} >Pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
+						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}} onClick={pay} >Pay <span style={{fontWeight:900}}>{`N${price}`}</span></button>
 						</div>
 					</div>
 

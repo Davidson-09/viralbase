@@ -27,6 +27,7 @@ function Search({searchterm}) {
 		setProgressDisplay('block')
 		setAds([])
 		const q = query(collection(db, "ads"), where( 'name', '==', searchterm), where("active", "==", true));
+		console.log(searchterm)
 		const querySnapshot = await getDocs(q);
 		let adlist = [];
 		querySnapshot.forEach((doc) => {

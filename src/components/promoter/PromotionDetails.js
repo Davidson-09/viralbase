@@ -96,6 +96,13 @@ function PromotionDetails({match}) {
 
 	}
 
+	const copyLink =()=>{
+		navigator.clipboard.writeText(`${domain}/promotion/${match.params.promotion}`)
+		setAlertMessage('link copied');
+		setAlertSeverity('success')
+		setDisplayAlert(true)
+	}
+
 	return (
 		<div style={{position:'fixed',backgroundColor:'#F2F2F2', Height:"100vh", width:'100%'}}>
 			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
@@ -127,6 +134,7 @@ function PromotionDetails({match}) {
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
 								<p style={{overflow:'auto'}}>{`${domain}/promotion/${match.params.promotion}`}</p>
+								<button onClick={copyLink}>copy link</button>
 						</div>
 				</div>
 

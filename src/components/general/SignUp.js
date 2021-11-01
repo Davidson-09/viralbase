@@ -77,7 +77,7 @@ function SignUp({match}){
 							role: 'promoter', impressions:0,
 							promotions: [], earnings: 0
 						}).then(()=>{
-							history.push('/promoter/front/home ')
+							history.push('/promoter/front/home')
 						})
 					}
 				})

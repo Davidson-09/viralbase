@@ -35,7 +35,6 @@ function ListOfAds() {
 			  setStatus('there are no ads at the moment')
 		  }
 		  setProgressDisplay('none')
-		  console.log(adlist);
 	}
 
 	return (
