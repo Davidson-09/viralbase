@@ -90,7 +90,7 @@ function SignUp({match}){
 				setDisplayAlert(true);
 				setAlertSeverity('warning');
 				setAlertMessage(error.message.replace('Firebase', ''));
-			})
+			})     
 		}
 	}
 
@@ -128,7 +128,7 @@ function SignUp({match}){
 							padding:'1em', fontSize:'1em'}} value={password} onChange={(e)=>{setPassword(e.target.value)}} />
 					</div>
 					{showPurposeBox && (<div style={{}}>
-						<p style={{marginBottom:'-.07em'}}>What will you use viralbase for</p>
+						<p style={{marginBottom:'-.07em'}}>What will you use viralbase for?</p>
 						<input required style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}} placeholder='to promote my....'
 							 value={purpose} onChange={(e)=>{setPurpose(e.target.value)}} />
