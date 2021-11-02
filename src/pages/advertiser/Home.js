@@ -62,7 +62,10 @@ function Home() {
 		if (num == 0 && ads.length >0){
 			setShowPurchasePrompt(true)
 		}
-		setAdList(ads)
+		if (ads.lenght > 0){
+			setAdList(ads)
+		}
+		
 	}
 
 	const toImpressionPurchasePage =()=>{
