@@ -1,5 +1,4 @@
 import React from 'react'
-import Happy from './res/Happy'
 import InviteCards from './res/InviteCards'
 import InviteCards2 from './res/InviteCards2'
 import Currency from './res/Currency'
@@ -7,6 +6,7 @@ import People from './res/People'
 import promoters from './res/promoters.svg'
 import './landing.css'
 import logo from './logo.svg'
+import happy from './res/happy.svg'
 
 import { useHistory} from 'react-router-dom';
 
@@ -61,7 +61,9 @@ function Landing() {
 						</div>
 				</div>
 				<div className='landing_hero_img' style={{marginLeft:'auto', marginRight:'auto'}}>
-				<Happy/>
+				<div style={{display:'flex', justifyContent:'center'}}>
+					 	<img src={happy} style={{width:'20em', height:'10em', marginTop:"1em", marginBottom:'2em'}}/>
+					 </div>
 				</div>
 			</div>
 
