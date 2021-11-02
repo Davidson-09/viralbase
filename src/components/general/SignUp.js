@@ -53,8 +53,8 @@ function SignUp({match}){
 						await setDoc(doc(db, 'users', user.uid), {
 							businessName: name, phoneNumber: phone, 
 							role: 'advertiser', impressions:0,
-							activeAds:0, totalImpressions: 10,
-							availableImpressions:0, purpose
+							activeAds:0, totalImpressions: 0,
+							availableImpressions: 10, purpose
 						}).then(()=>{
 							history.push('/advertiser/dashboard/Home')
 						})
