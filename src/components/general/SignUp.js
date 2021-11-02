@@ -17,6 +17,8 @@ function SignUp({match}){
 	const [email, setEmail] = useState('');
 	const [phone, setPhone] = useState(''); //phone number
 	const [password, setPassword] = useState('');
+	const [showPurposeBox, setShowPurposeBox] = useState(false);
+	const [purpose, setPurpose] = useState();
 
 	const[progressDisplay, setProgressDisplay] = useState('none');
 	const [alertMessage, setAlertMessage] = useState('');
@@ -30,6 +32,7 @@ function SignUp({match}){
 	useEffect(()=>{
 		if (match.params.role === 'advertiser'){
 			setTitle('Business name'); 
+			setShowPurposeBox(true);
 		}
 	})
 
@@ -51,7 +54,7 @@ function SignUp({match}){
 							businessName: name, phoneNumber: phone, 
 							role: 'advertiser', impressions:0,
 							activeAds:0, totalImpressions:0,
-							availableImpressions:0
+							availableImpressions:0, purpose
 						}).then(()=>{
 							history.push('/advertiser/dashboard/Home')
 						})
@@ -124,6 +127,13 @@ function SignUp({match}){
 						<input required type='password' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}} value={password} onChange={(e)=>{setPassword(e.target.value)}} />
 					</div>
+					{showPurposeBox && (<div style={{}}>
+						<p style={{marginBottom:'-.07em'}}>What will you use viralbase for</p>
+						<input required style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em'}} placeholder='to promote my....'
+							 value={purpose} onChange={(e)=>{setPurpose(e.target.value)}} />
+						</div>)}
+					
 					<button style={{width:'100%', marginTop:'1em', padding:'.5em',
 						fontSize:'1em', border:'none', backgroundColor:'var(--blueprimary)',
 						color:'white', fontWeight:'bold', height:'3em', borderRadius:'.5em'}}>Create account</button>
