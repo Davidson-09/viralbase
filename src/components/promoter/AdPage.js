@@ -148,6 +148,13 @@ function AdPage({match}) {
 		setDisplayAlert(true)
 	}
 
+	const copyDescription =()=>{
+		navigator.clipboard.writeText(ad.data.description)
+		setAlertMessage('description copied');
+		setAlertSeverity('success')
+		setDisplayAlert(true)
+	}
+
 	return (
 		<div style={{position:'fixed',backgroundColor:'#F2F2F2', Height:"100vh", width:'100%'}}>
 			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
@@ -172,6 +179,7 @@ function AdPage({match}) {
 						<div>
 							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Description:</p>
 							<p style={{width:'100%', overflowY:'auto', maxHeight:"10em"}}>{ad.data.description}</p>
+							<button onClick={copyDescription}>copy description</button>
 						</div>
 						<div>
 							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Tag line</p>
