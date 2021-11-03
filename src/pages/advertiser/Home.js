@@ -39,6 +39,7 @@ function Home() {
 
 			if (docSnap.exists()) {
 				const userDoc = docSnap.data();
+				console.log(userDoc)
 				setUserData(userDoc);
 				getAds(user.uid, docSnap.data().availableImpressions);
 				setProgressDisplay('none');
@@ -62,7 +63,7 @@ function Home() {
 		if (num == 0 && ads.length >0){
 			setShowPurchasePrompt(true)
 		}
-		if (ads.lenght > 0){
+		if (ads.length > 0){
 			setAdList(ads)
 		}
 		

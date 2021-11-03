@@ -43,11 +43,13 @@ function AdCard({ad}){
 
 	return(
 		<div style={{marginBottom:'1em'}} onClick={toDetails}>
-			<div className='ad_card_img1' style={{width:'10em', height:'10em' }}>
-				<img className='ad_card_img1' alt='ad image' src={image} style={{width:'10em', height:'10em', borderRadius:'.5em'}}/>
+			<div className='ad_card_img1' style={{width:'10em', height:'12em', textAlign:'center' }}>
+				<img className='ad_card_img1' alt='ad image' src={image} style={{width:'10em', height:'10em', borderRadius:'.5em',
+					objectFit:'contain'}}/>
+				<p className='adcard_text' style={{fontWeight:'bold'}}>{ad.data.name}</p>
+				<p style={{fontSize:'.7em', marginTop:"-1em", color:'var(--blueprimary)'}}>{`${impressions} impressions`}</p>
 			</div>
-			<p className='adcard_text' style={{fontWeight:'bold'}}>{ad.data.name}</p>
-			<p style={{fontSize:'.7em', marginTop:"-1em", color:'var(--blueprimary)'}}>{`${impressions} impressions`}</p>
+			
 		</div>
 	)
 }

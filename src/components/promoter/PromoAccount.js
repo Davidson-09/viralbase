@@ -4,12 +4,14 @@ import NewAlert from '../general/NewAlert';
 
 
 import {auth, db} from '../../fire'
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { getDoc, doc } from '@firebase/firestore';
 
 import {useHistory, Link} from 'react-router-dom';
 
 import profile from '../../res/profile.svg'
+
+//promoter account
 
 import './promoaccount.css'
 
@@ -95,7 +97,7 @@ function PromoAccount() {
 			<button style={{width:'10em', fontSize:'1em', height:'3em', border:'none', borderRadius:'.5em',
 				backgroundColor:'var(--blueprimary)', fontWeight:'700', color:'white'}} onClick={toWidthdraw}>withdraw</button>
 			</div>
-			<Link to='/'><p style={{textAlign:'center', color:'var(--blueprimary)'}}>log out</p></Link>
+			<Link to='/'><p style={{textAlign:'center', color:'var(--blueprimary)'}} onClick={()=>{signOut(auth)}}>log out</p></Link>
 			{failed && <p style={{textAlign:'center', color:'red'}}>you must have at least N5000 in earnings to withdraw</p>}
 		</div>
 	)

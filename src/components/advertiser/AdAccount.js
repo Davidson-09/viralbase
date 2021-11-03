@@ -2,12 +2,14 @@ import React, {useState, useEffect} from 'react';
 import SpinnerDiv from '../general/SpinnerDiv'
 
 import {auth, db} from '../../fire'
-import { onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc, collection, query, where, getDocs } from '@firebase/firestore';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { getDoc, doc} from '@firebase/firestore';
 
 import { useHistory } from 'react-router-dom';
 
 import businessprofile from '../../res/businessprofile.svg'
+
+// advertiser account
 
 function AdAccount(){
 
@@ -36,7 +38,8 @@ function AdAccount(){
 		})
 	}
 
-	const signOut =()=>{
+	const logOut =()=>{
+		signOut(auth);
 		history.push('/')
 	}
 
@@ -49,7 +52,7 @@ function AdAccount(){
 			<p style={{fontSize:'2em', fontWeight:'bold', textAlign:'center'}}>{user.businessName}</p>
 			<div style={{display:'flex', justifyContent:'center'}}>
 				<button style={{fontSize:'1em', width:'5em', backgroundColor:'var(--blueprimary)', color:'white',
-					border:'none', height:'2em', borderRadius:'.5em'}} onClick={signOut}>
+					border:'none', height:'2em', borderRadius:'.5em'}} onClick={logOut}>
 					log out
 				</button>
 			</div>
