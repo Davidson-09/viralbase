@@ -34,7 +34,7 @@ function SignUp({match}){
 
 	useEffect(()=>{
 		if (match.params.role === 'advertiser'){
-			setTitle('Business name'); 
+			setTitle('Name'); 
 			setShowPurposeBox(true);
 		}
 	})

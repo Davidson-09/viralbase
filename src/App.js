@@ -16,6 +16,7 @@ import PromoHeader from './components/promoter/PromoHeader'
 import ListOfAds from './components/promoter/ListOfAds'
 
 import Landing from './Landing.js'
+import Landing2 from './Landing2.js'
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import AdPage from './components/promoter/AdPage';
@@ -39,7 +40,7 @@ function App() {
 	  <Router>
 		  <UserProvider>
 		<div className="App" style={{}}>
-			<Route path='/' exact component={Landing}/>
+			<Route path='/' exact component={Landing2}/>
 			<Switch>
 				<Route path='/login' component={Login}/>
 				<Route path='/signup/:role' component={SignUp}/>
