@@ -1,15 +1,18 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useContext} from 'react'
 import SpinnerDiv from './SpinnerDiv';
 import {Link, useHistory} from 'react-router-dom';
 import NewAlert from './NewAlert';
+import cogPool from '../../UserPool'
+import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
-import {db, auth} from '../../fire'
-import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import * as AWS from 'aws-sdk';
 
 import './signup.css'
 
 function SignUp({match}){
+
+	const docClient = new AWS.DynamoDB.DocumentClient()
+
 
 	const [title, setTitle] = useState('Full Name') // the title of the name input
 
@@ -36,62 +39,120 @@ function SignUp({match}){
 		}
 	})
 
+
+
 	const register = async(e)=>{
-		// if role is advertiser
-		// register as advertiser
-		// if role is promoter 
-		// register as promoter
-		//show progress bar
-		setProgressDisplay('block')
 		e.preventDefault();
+
+		setProgressDisplay('block');
+
 		if (match.params.role === 'advertiser'){
-			createUserWithEmailAndPassword(auth, email, password).
-			then(()=>{
-				onAuthStateChanged(auth, async (user)=>{
-					if (user){
-						// set up the users profile in firestore
-						await setDoc(doc(db, 'users', user.uid), {
-							businessName: name, phoneNumber: phone, 
-							role: 'advertiser', impressions:0,
-							activeAds:0, totalImpressions: 0,
-							availableImpressions: 10, purpose
-						}).then(()=>{
-							history.push('/advertiser/dashboard/Home')
-						})
-					}
-				})
-			}
-			).catch((error)=>{
+			const role = 'advertiser';
+			const attributeList = [];
+			attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'advertiser'}))
+			attributeList.push(new CognitoUserAttribute({Name:"custom:purpose",Value: purpose}))
+			attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
+			attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
+			attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
+
+			cogPool.signUp(email, password, attributeList, null, (err, data)=>{
+				if (err){
+					console.log(err)
+					setAlertMessage(err.message);
+					setDisplayAlert(true);
+					setAlertSeverity('warning')
+				}
+				console.log(data);
 				setProgressDisplay('none');
-				setDisplayAlert(true);
-				setAlertSeverity('warning');
-				setAlertMessage(error.message.replace('Firebase', ''));
+
+				if (data){
+					// set up user account in dynamodbs
+					console.log(data.userSub);
+					const userCredentials = {email, password, role}
+					localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
+					setUpAdvertiser(data.userSub);
+					
+				}
 			})
-		} else {
-			// do something for promoter
-			createUserWithEmailAndPassword(auth, email, password).
-			then(()=>{
-				onAuthStateChanged(auth, async (user)=>{
-					if (user){
-						console.log(user.uid);
-						// set up the users profile in firestore
-						await setDoc(doc(db, 'users', user.uid), {
-							name: name, phoneNumber: phone, 
-							role: 'promoter', impressions:0,
-							promotions: [], earnings: 0
-						}).then(()=>{
-							history.push('/promoter/front/home')
-						})
-					}
-				})
-			}
-			).catch((error)=>{
+		} else{
+			const role = 'promoter';
+			const attributeList = [];
+			attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'promoter'}))
+			attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
+			attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
+			attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
+
+			cogPool.signUp(email, password, attributeList, null, (err, data)=>{
+				if (err){
+					console.log(err)
+					setAlertMessage(err.message);
+					setDisplayAlert(true);
+					setAlertSeverity('warning')
+				}
+				console.log(data);
+				if (data){
+					// set up advertiser account in dynamodb
+					// go to promoter page
+					const userCredentials = {email, password, role}
+					localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
+					setupPromoter(data.userSub)
+				}
 				setProgressDisplay('none');
-				setDisplayAlert(true);
-				setAlertSeverity('warning');
-				setAlertMessage(error.message.replace('Firebase', ''));
-			})     
+
+				
+			})
 		}
+		
+	}
+
+	const setUpAdvertiser =(userSub)=>{
+		var params = {
+			TableName: 'advertisers',
+			Item: {
+				availableImpressions: 0,
+				activeAds: 0,
+				uid: userSub,
+				impressionsGotten:0
+			}
+		}
+
+		docClient.put(params, (err, data)=>{
+			if (err){
+				setAlertMessage(err.message);
+				setDisplayAlert(true);
+				setAlertSeverity('warning')
+				console.log(err)
+			}
+			console.log(data);
+			if (data){
+				history.push('/confirmaccount')
+			}
+		})
+	}
+
+	const setupPromoter =(userSub)=>{
+		var params = {
+			TableName: 'promoters',
+			Item: {
+				promotions: 0, // number of promotions
+				impressions: 0,
+				uid: userSub,
+				earnings:0,
+			}
+		}
+
+		docClient.put(params, (err, data)=>{
+			if (err){
+				setAlertMessage(err.message);
+				setDisplayAlert(true);
+				setAlertSeverity('warning')
+				console.log(err)
+			}
+			console.log(data);
+			if (data){
+				history.push('/confirmaccount')
+			}
+		})
 	}
 
 	return(
@@ -120,7 +181,8 @@ function SignUp({match}){
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Phone Number</p>
 						<input required type='phone number' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} value={phone} onChange={(e)=>{setPhone(e.target.value)}} />
+							padding:'1em', fontSize:'1em'}} placeholder='e.g. +2341234567893'
+							value={phone} onChange={(e)=>{setPhone(e.target.value)}} />
 					</div>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Password</p>

@@ -1,14 +1,11 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import AdCard from '../../components/advertiser/AdCard'
 import Empty from '../../components/advertiser/Empty'
 import { Button } from '@material-ui/core';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
-import SpinnerDiv from '../../components/general/SpinnerDiv'
-
-import {auth, db} from '../../fire'
-import { onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc, collection, query, where, getDocs } from '@firebase/firestore';
+import SpinnerDiv from '../../components/general/SpinnerDiv';
+import * as AWS from 'aws-sdk';
 
 import { useHistory } from 'react-router-dom';
 
@@ -16,6 +13,9 @@ import './adhome.css'
 
 
 function Home() {
+
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'));
+	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	const [adList, setAdList] = useState()
 
@@ -26,47 +26,57 @@ function Home() {
 
 	const [showPurchasePrompt, setShowPurchasePrompt] = useState(false);
 
-
 	useEffect(()=>{
-		getUserData();
+		getUserData()
+		getAds()
 	}, [])
 
 	const getUserData = async ()=>{
-		setProgressDisplay('block');
-		onAuthStateChanged(auth, async (user)=>{
-			const docRef = doc(db, 'users', user.uid);
-			const docSnap = await getDoc(docRef);
+		setProgressDisplay('block')
+		var params = {
+			TableName: 'advertisers',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": userAttributes[0].Value
+			}
+		}
 
-			if (docSnap.exists()) {
-				const userDoc = docSnap.data();
-				console.log(userDoc)
-				setUserData(userDoc);
-				getAds(user.uid, docSnap.data().availableImpressions);
-				setProgressDisplay('none');
+		await docClient.query(params, (err, data)=>{
+			
+			if (err){
+				setProgressDisplay('none')
 			} else{
-				setProgressDisplay('none');
+				setUserData(data.Items[0])
+				setProgressDisplay('none')
 			}
 		})
 	}
 
-	const getAds = async (uid, num)=>{
-		// get the users ads
-		const adsRef = collection(db, "ads");
-		const q = query(adsRef, where("owner", "==", uid));
-		const querySnapshot = await getDocs(q);
-		let ads = [];
-		querySnapshot.forEach((doc) => {
-			// doc.data() is never undefined for query doc snapshots
-			let ad = {id: doc.id, data: doc.data()};
-			ads.push(ad);
+	const getAds = async ()=>{
+		setProgressDisplay('block')
+		var params = {
+			TableName : "ads",
+			KeyConditionExpression: "#ownerId = :id",
+			ExpressionAttributeNames:{
+				"#ownerId": "ownerId"
+			},
+			ExpressionAttributeValues: {
+				":id": userAttributes[0].Value
+			}
+		};
+
+		docClient.query(params, function(err, data) {
+			if (err) {
+				console.error('something went wrong');
+			} else {
+				setAdList(data.Items)
+			}
+			setProgressDisplay('none')
 		});
-		if (num == 0 && ads.length >0){
-			setShowPurchasePrompt(true)
-		}
-		if (ads.length > 0){
-			setAdList(ads)
-		}
-		
 	}
 
 	const toImpressionPurchasePage =()=>{
@@ -81,7 +91,7 @@ function Home() {
 		<div className='ad_home_container' style={{paddingLeft:"1em", paddingRight:'1em'}}>
 			<SpinnerDiv show={progressDisplay} />
 		<div style={{flex:1}}>
-			<p className='home_business_name' style={{fontWeight:'700'}}>{userData.businessName}</p>
+			<p className='home_business_name' style={{fontWeight:'700'}}>{userAttributes[3].Value}</p>
 			<div className='home_info_div' style={{ justifyContent:'center', alignItems:'center', display:'flex', flexDirection:'column',
 				 marginLeft:'auto', marginRight:'auto'}}>
 				<p style={{fontWeight:'500', color:'var(--blueprimary)', marginBottom:'-1.5em'}}>Available impressions</p>
@@ -97,8 +107,8 @@ function Home() {
 			<div>
 					<div className='ad_home_stat_container'>
 						<div className="ad_home_impressions_div">
-							<p className='ad_home_impressions_count'>{userData.totalImpressions}</p>
-							<p className='ad_home_impressions_text'>total impressions</p>
+							<p className='ad_home_impressions_count'>{userData.impressionsGotten}</p>
+							<p className='ad_home_impressions_text'>impressions gotten</p>
 						</div> 
 						<div className='ad_home_activeads_div'>
 							<p className='ad_home_activeads_count'>{userData.activeAds}</p>
@@ -131,8 +141,8 @@ function Home() {
 		<div >
 			<div style={{display:'none'}} className='ad_home_stat_container2'>
 				<div className="ad_home_impressions_div">
-					<p className='ad_home_impressions_count'>{userData.totalImpressions}</p>
-					<p className='ad_home_impressions_text'>total impressions</p>
+					<p className='ad_home_impressions_count'>{userData.impressionsGotten}</p>
+					<p className='ad_home_impressions_text'>impressions gotten</p>
 				</div> 
 				<div className='ad_home_activeads_div'>
 					<p className='ad_home_activeads_count'>{userData.activeAds}</p>

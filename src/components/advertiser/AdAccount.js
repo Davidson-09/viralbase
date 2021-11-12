@@ -15,31 +15,17 @@ function AdAccount(){
 
 	const [user, setUser] = useState({});
 	const [progressDisplay, setProgressDisplay] = useState('none')
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'));
 
 	const history = useHistory();
 
 	useEffect(()=>{
-		getUser()
 	}, [])
 
-	const getUser =()=>{
-		setProgressDisplay('block');
-		onAuthStateChanged(auth, async (user)=>{
-			const docRef = doc(db, 'users', user.uid);
-			const docSnap = await getDoc(docRef);
-
-			if (docSnap.exists()) {
-				const userDoc = docSnap.data();
-				setUser(userDoc);
-				setProgressDisplay('none');
-			} else{
-				setProgressDisplay('none');
-			}
-		})
-	}
+	
 
 	const logOut =()=>{
-		signOut(auth);
+		localStorage.setItem('userAttributes', JSON.stringify({}));
 		history.push('/')
 	}
 
@@ -49,7 +35,7 @@ function AdAccount(){
 			<div style={{display:'flex', justifyContent:'center', margintop:'2em'}}>
 				<img src={businessprofile} style={{width:'10em', height:'10em'}}/>
 			</div>
-			<p style={{fontSize:'2em', fontWeight:'bold', textAlign:'center'}}>{user.businessName}</p>
+			<p style={{fontSize:'2em', fontWeight:'bold', textAlign:'center'}}>{userAttributes[3].Value}</p>
 			<div style={{display:'flex', justifyContent:'center'}}>
 				<button style={{fontSize:'1em', width:'5em', backgroundColor:'var(--blueprimary)', color:'white',
 					border:'none', height:'2em', borderRadius:'.5em'}} onClick={logOut}>

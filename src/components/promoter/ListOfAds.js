@@ -1,40 +1,44 @@
 import React, {useEffect, useState} from 'react'
 import AdCard from './AdCard'
 import SpinnerDiv from '../general/SpinnerDiv'
+import * as AWS from 'aws-sdk';
 
 import './listOfAds.css'
-
-import {db} from '../../fire'
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
-
 function ListOfAds() {
 	
 	const [ads, setAds] = useState();
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [status, setStatus] = useState('loading...');
+	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	useEffect(()=>{
 		getAds()
 	},[])
 
-	const getAds = async ()=>{
+	const getAds =()=>{
 		setProgressDisplay('block')
-		const q = query(collection(db, "ads"), where("active", "==", true), limit(50));
-		const querySnapshot = await getDocs(q);
-		let adlist = [];
-		querySnapshot.forEach((doc) => {
-			// doc.data() is never undefined for query doc snapshots
-			let ad = {id:doc.id, data:doc.data()}
-			adlist.push(ad)
-		  });
-		  
-		  if (adlist.length > 0){
-			setAds(adlist);
-		  } else{
-			  setStatus('there are no ads at the moment')
-		  }
-		  setProgressDisplay('none')
+		var params = {
+			"TableName": "ads",
+			"IndexName": "active-index",
+			"KeyConditionExpression": "active = :a",
+			"ExpressionAttributeValues": {
+				":a": "active"
+			},
+			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, adthumbnail",
+			"ScanIndexForward": false
+		}
+
+		docClient.query(params, function(err, data) {
+			if (err) {
+				setProgressDisplay('none')
+				console.log(err)
+			} else {
+				console.log(data)
+				setAds(data.Items)
+				setProgressDisplay('none')
+			}
+		})
 	}
 
 	return (

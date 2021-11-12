@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import SpinnerDiv from '../../components/general/SpinnerDiv';
+import NewAlert from '../../components/general/NewAlert';
 
 import { useHistory } from 'react-router-dom';
-
-import { db, storage, auth } from '../../fire';
-import { doc, getDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
-import { ref, getDownloadURL,  deleteObject } from "firebase/storage";
-import {  onAuthStateChanged } from "firebase/auth";
 import ReactPlayer from 'react-player'
+
+import * as AWS from 'aws-sdk';
 
 import './addetail.css';
 
@@ -16,139 +14,151 @@ function AdDetails({match}) {
 
 	const green = '#00FF00';
 	const red = '#FF0000';
-
-	const [ad, setAd] = useState({id:'', data:{}});
+	const docClient = new AWS.DynamoDB.DocumentClient()
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [mode, setMode] = useState('active');
 	const [modeColor, setModeColor] = useState(green);
-	const [statement, setStatement] = useState(''); // the statement of how many people are promoting the ad
 	const [buttonColor, setButtonColor] = useState(red);
 	const [buttonText, setButtonText] = useState('deactivate');
 	const [isVideo, setIsVideo] = useState(false);
 	const [mediaUrl, setMediaUrl] = useState();
-	const [active, setActive] = useState();
 
-	
+	const [alertMessage, setAlertMessage] = useState('');
+	const [alertSeverity, setAlertSeverity] = useState('');
+	const [displayAlert, setDisplayAlert] = useState(false);
+
+	const currentAd = JSON.parse(localStorage.getItem('currentAd'));
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'));
+
+	const bucketName = 'viralbaseadsbucket'
+
+	const s3 = new AWS.S3({
+		apiVersion: "2006-03-01",
+		params: { Bucket: bucketName }
+	});
 
 	const history = useHistory();
 
 	useEffect(()=>{
-		getAd();
-		
+		console.log(currentAd);
+		if(currentAd.adtype==='video'){
+			setIsVideo(true);
+		}
+		loadMedia();
+		setAdMode();
 	}, [])
 
-	const loadMedia =(ad)=>{
-		if (ad.data.type === 'photo'){
-			getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
-				setMediaUrl(url)
-			})
+
+
+	const setAdMode =()=>{
+		if (currentAd.active === 'active') {
+			setMode('active');
+			setModeColor(green);
+			setButtonColor(red);
+			setButtonText('deactivate');
 		} else {
-			// it is a video
-			getDownloadURL(ref(storage, ad.data.mediaFile)).then(async (url)=>{
-			const media = await fetch(url);
-			const mediaBlob = await media.blob();
-			const mediaUrl = URL.createObjectURL(mediaBlob);
-			setMediaUrl(mediaUrl);
-			})
-		}
-		
-	}
-
-	const getAd = async ()=>{
-		setProgressDisplay('block');
-		 // get the ad from firestore
-		 const adRef = doc(db, 'ads', match.params.adid);
-		 const adSnap = await getDoc(adRef);
-
-		 if (adSnap.exists()) {
-			setAd({id: adSnap.id, data: adSnap.data()});
-			setActive(adSnap.data().active)
-			loadMedia({id: adSnap.id, data: adSnap.data()});
-			if (!(adSnap.data().active)){
-				setMode('Inactive');
-				setModeColor(red);
-				setButtonColor(green);
-				setButtonText('activate');
-			}
-			if (adSnap.data().promoters === 0){
-				setStatement('Nobody is');
-			} else if(adSnap.data().promoters === 1){
-				setStatement('1 person is');
-			} else {
-				setStatement(`${adSnap.data().promoters} people are`);
-			}
-			if (adSnap.data().type === 'video'){
-				setIsVideo(true)
-			}
-			setProgressDisplay('none');
-		} else{
-			setProgressDisplay('none');
+			setMode('inactive');
+			setModeColor(red);
+			setButtonColor(green);
+			setButtonText('activate');
 		}
 	}
 
-	const deleteAd = async ()=>{
-		// delete firestore object
-		setProgressDisplay('block');
-		await deleteDoc(doc(db, "ads", ad.id)).then(()=>{
-			const mediaRef = ref(storage, ad.data.mediaFile);
-			deleteObject(mediaRef).then(() => {
-				// File deleted successfully
-				// decrement the number of active ads
-				decrementActiveAds()
-				
-			  }).catch((error) => {
-				// Uh-oh, an error occurred!
-			  });
-		});
-		//delete media file
-	}
+	const loadMedia = async ()=>{
+		const params = {
+			Bucket: bucketName,
+			Expires: 3000,
+			Key: currentAd.mediaFile, // this key is the S3 full file path (ex: mnt/sample.txt)
+		};
+		const url = await s3.getSignedUrl('getObject', params)
 
-	const decrementActiveAds =()=>{
-		// this function reduces the number of an advertisers active ads by 1
-		
-		onAuthStateChanged(auth, async (user)=>{
-			const userRef = doc(db, "users", user.uid);
-			await updateDoc(userRef, {
-				activeAds: increment(-1)
-			}).then(()=>{
-				history.push('/advertiser/dashboard/Home')
-			})
-		})
+		const media = await fetch(url);
+		const mediaBlob = await media.blob();
+		const mediaUrl = URL.createObjectURL(mediaBlob);
+		setMediaUrl(mediaUrl);
 	}
 
 	const changeMode = async ()=>{
-		if (active){
-			// if the ad is active deactivate it
-			setProgressDisplay('block');
-			await updateDoc(doc(db, "ads", ad.id), {
-				active: false
-			  });
-			  setModeColor(red);
-			  setButtonColor(green);
-			  setButtonText('activate');
-			  setMode('inactive')
-			  setProgressDisplay('none');
-			  setActive(false)
-			  console.log('deactivated');
-		} else{
-			setProgressDisplay('block');
-			await updateDoc(doc(db, "ads", ad.id), {
-				active: true
-			  });
-			  setModeColor(green);
-			  setButtonColor(red);
-			  setButtonText('deactivate');
-			  setMode('active')
-			  setProgressDisplay('none');
-			  setActive(true)
-			  console.log('activated')
+		setProgressDisplay('block')
+		var newMode = 'active';
+		if (currentAd.active === 'active') {
+			// deactivate the ad
+			newMode = 'inactive';
 		}
-		
+		var params = {
+			TableName: 'ads',
+			Key:{
+				"ownerId": currentAd.ownerId,
+				"adId": currentAd.adId
+			},
+			UpdateExpression: "set active = :a",
+			ExpressionAttributeValues:{
+				":a":newMode
+			},
+			ReturnValues:"UPDATED_NEW"
+		};
+
+		docClient.update(params, function(err, data) {
+			if (err) {
+				console.log(err);
+				setProgressDisplay('none')
+			} else {
+				console.log("UpdateItem succeeded:", data);
+				setProgressDisplay('none');
+				currentAd.active = newMode;
+				localStorage.setItem('currentAd', JSON.stringify(currentAd));
+				setAdMode();
+			}
+		});
+	}
+
+	const deleteAd = async ()=>{
+		setProgressDisplay('block')
+		var params = {
+			TableName: 'ads',
+			Key:{
+				"ownerId": currentAd.ownerId,
+				"adId": currentAd.adId
+			}
+		};
+
+		docClient.delete(params, function(err, data) {
+			if (err) {
+				console.error(err);
+				setProgressDisplay('block')
+			} else {
+				var params = {
+					TableName: 'advertisers',
+					Key:{
+						"uid": userAttributes[0].Value
+					},
+					UpdateExpression: "set activeAds = activeAds - :val",
+					ExpressionAttributeValues:{
+						":val": 1
+					},
+					ReturnValues:"UPDATED_NEW"
+				};
+				docClient.update(params, function(err, data) {
+					if (err) {
+						console.error(err);
+					}
+				});
+				history.push('/advertiser/dashboard/Home');
+			}
+		});
+	}
+
+	const copyPromoLink =()=>{
+		navigator.clipboard.writeText(`${window.location.host}/promoter/addetails/${currentAd.adId}`)
+		setAlertMessage('description copied');
+		setAlertSeverity('success')
+		setDisplayAlert(true)
 	}
 
 	return (
 		<div style={{position:'fixed',backgroundColor:'#F2F2F2', Height:"100vh", width:'100%'}}>
 			<SpinnerDiv show={progressDisplay} />
+			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
 			<div style={{width:'100%', height:'100vh', overflow:"auto"}}>
 
 				<div className='addetails_subcontainer' style={{backgroundColor:'white', Height:'30em', width:'80%', margin:'auto', marginTop:'17vh',
@@ -161,24 +171,21 @@ function AdDetails({match}) {
 						</div>
 						<div style={{}}>
 							<div >
-								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{ad.data.name}</p>
-								<p style={{color:'var(--blueprimary)'}}>{`${ad.data.impressions} impressions`}</p>
+								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{currentAd.adname}</p>
+								<p style={{color:'var(--blueprimary)'}}>{`${currentAd.impressions} impressions`}</p>
 							</div>
 							<p style={{marginTop:'1.5em', color:modeColor}}>{mode}</p>
 						</div>
 						<div>
 							<p style={{marginBottom:'-1.5em'}}>Link:</p>
-							<p style={{ width:'70%', overflow:'auto', color:'var(--blueprimary)'}}>{ad.data.link}</p>
+							<p style={{ width:'70%', overflow:'auto', color:'var(--blueprimary)'}}>{currentAd.link}</p>
 						</div>
 						<div>
-							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Description:</p>
-							<p style={{width:'100%', overflowY:'auto', maxHeight:"10em"}}>{ad.data.description}</p>
+							<p style={{marginBottom:'-1.5em'}}>Link for your promoters:</p>
+							<p style={{ width:'70%', overflow:'auto', color:'var(--blueprimary)'}}>{`${window.location.host}/promoter/addetails/${currentAd.adId}`}</p>
 						</div>
-						<div>
-							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Tag line</p>
-							<p style={{width:'100%', overflowY:'auto', maxHeight:"3em"}}>{ad.data.tagline}</p>
-						</div>
-						<p style={{textAlign:'center', marginTop:'1.5em', color:'var(--blueprimary)'}}>{`${statement} promoting this ad`}</p>
+						<button onClick={copyPromoLink}>copy promotion link</button>
+						<p style={{textAlign:'center', marginTop:'1.5em', color:'var(--blueprimary)'}}>people promoting this ad: <span style={{color:'black'}}>{currentAd.promoters}</span></p>
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
 							<button style={{fontSize:'1em', padding:"1em", borderRadius:'.6em', width:'10em',

@@ -2,9 +2,8 @@ import React, {useEffect, useState} from 'react'
 import SpinnerDiv from './SpinnerDiv'
 import NewAlert from './NewAlert';
 
-import {auth, db} from '../../fire'
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc } from '@firebase/firestore';
+import {CognitoUser, AuthenticationDetails} from 'amazon-cognito-identity-js'
+import cogPool from '../../UserPool';
 
 import { useHistory, Link } from 'react-router-dom';
 
@@ -27,28 +26,43 @@ function Login() {
 	const signIn = async (e)=>{
 		e.preventDefault();
 		setProgressDisplay('block');
-		signInWithEmailAndPassword(auth, email, password).then(()=>{
-			onAuthStateChanged(auth, async (user)=>{
-				const docRef = doc(db, 'users', user.uid);
-				const docSnap = await getDoc(docRef);
+		const cogUser = new CognitoUser({
+			Username: email,
+			Pool: cogPool
+		});
+		const authDetails = new AuthenticationDetails({
+			Username: email,
+			Password: password
+		})
 
-				if (docSnap.exists()) {
-					const userDoc = docSnap.data();
-					if (userDoc.role == 'advertiser'){
-						// go to advertiser dashbaord
-						history.push('/advertiser/dashboard/Home');
-					} else{
-						// the user is a promoter
-						//go to promoter page
-						history.push('/promoter/front/home');
+		cogUser.authenticateUser(authDetails, {
+			onSuccess: (result)=>{
+				cogUser.getUserAttributes((err, data)=>{
+					if(err){
+						setAlertMessage(err.message);
+						setAlertSeverity('warning');
+						setDisplayAlert(true);
+						setProgressDisplay('none')
+					}else{
+						localStorage.setItem('userAttributes', JSON.stringify(data));
+						localStorage.setItem('userCredentials', JSON.stringify({email, password, role: data[6].Value}));
+						if ( data[6].Value === 'advertiser'){
+							history.push('/advertiser/dashboard/Home')
+						} else{
+							// the user is a promoter
+							history.push('/promoter/front/home')
+						}
+						
 					}
-				}
-			})
-		}).catch((error)=>{
-			setProgressDisplay('none');
-			setDisplayAlert(true);
-			setAlertSeverity('warning');
-			setAlertMessage(error.message.replace('Firebase', ''));
+				});
+				
+			},
+			onFailure: (err)=>{
+				setAlertMessage(err.message);
+				setAlertSeverity('warning');
+				setDisplayAlert(true);
+				setProgressDisplay('none')
+			}
 		})
 	}
 

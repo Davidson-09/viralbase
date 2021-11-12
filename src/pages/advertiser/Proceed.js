@@ -3,10 +3,7 @@ import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
 
 import { usePaystackPayment } from 'react-paystack';
-
-import {auth, db} from '../../fire'
-import { onAuthStateChanged } from "firebase/auth";
-import { updateDoc, doc, increment } from '@firebase/firestore';
+import * as AWS from 'aws-sdk';
 
 import { useHistory } from 'react-router-dom';
 
@@ -21,6 +18,7 @@ import './proceed.css'
 function Proceed() {
 
 	const history = useHistory();
+	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	const [impressions, setImpressions] = useState(0);
 	const [price, setPrice] = useState(0);
@@ -31,18 +29,14 @@ function Proceed() {
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
 
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'));
+	const userCredentials = JSON.parse(localStorage.getItem('userCredentials'));
+
 	useEffect(()=>{
-		getUser();
 	}, [])
 
-	const getUser =()=>{
-		onAuthStateChanged(auth, async (user)=>{
-			setUser(user)
-		})
-	}
-
 	const calculatePrice =(e)=>{
-		let newPrice = e.target.value * 300;
+		let newPrice = e.target.value * 100;
 		setPrice(newPrice);
 	}
 
@@ -55,16 +49,28 @@ function Proceed() {
 		// add purchased impressions to users account
 
 		setProgressDisplay(true);
-		const userRef = doc(db, "users", user.uid);
-		await updateDoc(userRef, {
-			availableImpressions: increment(impressions)
-		}).then(()=>{
-			history.push('/advertiser/dashboard/Home');
-		}).catch((error)=>{
-				setAlertMessage(error.message.replace('Firebase', ''));
+
+		let newimpressions = 0;
+		var params = {
+			TableName: 'advertisers',
+			Key:{
+				"uid": userAttributes[0].Value
+			},
+			UpdateExpression: "set availableImpressions = availableImpressions + :val",
+			ExpressionAttributeValues:{
+				":val": parseInt(impressions)
+			},
+			ReturnValues:"UPDATED_NEW"
+		};
+		docClient.update(params, function(err, data) {
+			if (err) {
+				setAlertMessage(err.message);
 				setDisplayAlert(true);
 				setAlertSeverity('warning');
 				setProgressDisplay(true);
+			} else{
+				history.push('/advertiser/dashboard/Home');
+			}
 		});
 	}
 
@@ -75,8 +81,7 @@ function Proceed() {
 		reference: (new Date()).getTime().toString(),
 		amount: price*100,
 		publicKey: 'pk_live_b18f3f98c9492f2211ee0991cb6f13c51d54b5df',
-		email: user.email,
-	 	uid: user.uid
+		email: userCredentials.email,
 	};
 
 	const onSuccess = (reference) => {
@@ -94,10 +99,10 @@ function Proceed() {
 
 	const pay =(e)=>{
 		e.preventDefault();
-		if (impressions >= 10){
+		if (impressions >= 30){
 			initializePayment(onSuccess, onClose)
 		} else{
-			setAlertMessage('you cannot purhase less than 10 impressions');
+			setAlertMessage('you cannot purhase less than 30 impressions');
 			setDisplayAlert(true);
 			setAlertSeverity('warning');
 		}

@@ -2,16 +2,10 @@ import React, {useState} from 'react'
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import { Button } from '@material-ui/core';
-import VideoThumbnail from 'react-video-thumbnail';
 import SpinnerDiv from '../../components/general/SpinnerDiv'
 import NewAlert from '../../components/general/NewAlert';
-
-import { ref, uploadBytes, getDownloadURL, uploadString } from "firebase/storage";
-import {auth, db, storage} from '../../fire'
-import { onAuthStateChanged } from "firebase/auth";
-import { updateDoc, doc, increment, setDoc } from '@firebase/firestore';
-
-import { useHistory, Link } from 'react-router-dom';
+import * as AWS from 'aws-sdk';
+import { useHistory } from 'react-router-dom';
 
 import './adcreation.css'
 
@@ -19,120 +13,212 @@ function AdCreation() {
 
 	const history = useHistory();
 
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'));
+
+	const docClient = new AWS.DynamoDB.DocumentClient()
+
 	const [media, setMedia] = useState(''); // ad media file
 	const [displaybutton, setDisplayButton] = useState(true); //display upload button
 	const [showPreview, setShowPreview] = useState(false);
 	const [user, setUser] = useState();
 
 	const [adName, setAdName] = useState('');
-	const [description, setDescription] = useState('');
-	const [tagline, setTagline] = useState('');
 	const [adLink, setAdLink] = useState('');
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
+	const bucketName = 'viralbaseadsbucket'
 
-	const uploadAd = async (e)=>{
-		e.preventDefault();
+
+	const s3 = new AWS.S3({
+		apiVersion: "2006-03-01",
+		params: { Bucket: bucketName }
+	});
+	//------------------------aws-------------------------------------------------------------------
+
+	const uploadAd =(e)=>{
+		e.preventDefault()
+
 		if (media.size <= 50000000){
 			setProgressDisplay('block');
-			setShowPreview(false);
-			onAuthStateChanged(auth, async (user)=>{
-				setUser(user);
-				let uid = user.uid
-				let thumbnailUrl = null; // thumbnail storage pointer
-				let videoUrl = null; // video storage pointer
-				let photoUrl = null;
-				// upload media file to storage
-				if (media.type === 'video/mp4'){
-					// upload the thumbnail
-					let adRef = ref(storage, `ads/media/thumbnail/${media.name}`)
-					generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
-					    uploadString(adRef, thumbnail, 'data_url' ).then((snapshot)=>{
-						thumbnailUrl= snapshot.metadata.fullPath;
-						// upload video;
-						let adRef = ref(storage, `ads/media/videos/${media.name}`)
-						setDisplayAlert(true);
-						uploadBytes(adRef, media).then((snapshot)=>{
-							videoUrl=snapshot.metadata.fullPath;
-							// set firestore object 
-							let newAd = {
-								name: adName.toLowerCase(),
-								description: description,
-								tagline: tagline,
-								link: adLink,
-								type: 'video',
-								mediaFile: videoUrl,
-								thumbnail: thumbnailUrl,
-								owner: uid,
-								active: true,
-								impressions:0,
-								promoters:0
-							}
-							// the name of the firestore object is the users uid plus the name of the file
-							setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
-								updateAds(uid);
-							}).catch((error)=>{
-								setProgressDisplay('none');
-								setDisplayAlert(true);
-								setAlertSeverity('warning');
-								setAlertMessage(error.message);
-							})
-							
-						}).catch((error)=>{
-							setProgressDisplay('none');
+			// upload media file to storage
+			if (media.type === 'video/mp4'){
+				// upload the thumbnail
+				var thumbnailFolderKey = encodeURIComponent('ads') + "/" + encodeURIComponent('thumbnails') + "/";
+				var thumbnailKey = thumbnailFolderKey + media.name;
+				generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
+					var blobData = dataURItoBlob(thumbnail);
+					var upload = new AWS.S3.ManagedUpload({
+						params: {
+							Bucket: bucketName,
+							Key: thumbnailKey,
+							Body: blobData,
+							ContentType: "image/jpeg"
+						}
+					});
+					var promise = upload.promise();
+					promise.then(
+						function(data) {
+							var thumbkey = data.Key
+							// upload the video
+							var mediaFolderKey = encodeURIComponent('ads') + '/' + encodeURIComponent('admedia') + "/";
+							var videoKey = mediaFolderKey + media.name;
+							var upload = new AWS.S3.ManagedUpload({
+								params: {
+									Bucket: bucketName,
+									Key: videoKey,
+									Body: media,
+								}
+							});
+
+							var promise = upload.promise();
+							promise.then(
+								function(data) {
+									console.log(data)
+									// set up ad object in dynamodb
+									var adParams = {
+										TableName: 'ads',
+										Item: {
+											adId: (userAttributes[0].Value + Math.random()),
+											ownerId: userAttributes[0].Value,
+											active: 'active',
+											ownerCanActivate: true,
+											impressions: 0,
+											adname: adName,
+											promoters:0,
+											mediaFile: data.Key,
+											adtype: 'video',
+											adthumbnail: thumbkey,
+											link: adLink
+										}
+									}
+
+									docClient.put(adParams, (err, data)=>{
+										if (err){
+											setAlertMessage(err.message);
+											setDisplayAlert(true);
+											setAlertSeverity('warning')
+											setProgressDisplay('none');
+										}
+										if (data){
+											// increment number of ads for the advertiser
+											var params = {
+												TableName: 'advertisers',
+												Key:{
+													"uid": userAttributes[0].Value
+												},
+												UpdateExpression: "set activeAds = activeAds + :val",
+												ExpressionAttributeValues:{
+													":val": 1
+												},
+												ReturnValues:"UPDATED_NEW"
+											};
+											docClient.update(params, function(err, data) {
+												if (err) {
+													console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+												}
+											});
+											history.push('/advertiser/dashboard/Home')
+										}
+									})
+								},
+								function(err) {
+									setDisplayAlert(true);
+									setAlertSeverity('warning');
+									setAlertMessage(err.message);
+									setProgressDisplay('none');
+								}
+							);
+						},
+						function(err) {
 							setDisplayAlert(true);
 							setAlertSeverity('warning');
-							setAlertMessage(error.message.replace('firebase', ''));
-						})
-					}).catch((error)=>{
+							setAlertMessage(err.message);
+							setProgressDisplay('none');
+						}
+					);
+				})
+			} else if(media.type === 'image/jpeg' || media.type == 'image/png'){
+				// upload the photo
+				var mediaFolderKey = encodeURIComponent('ads') + '/' + encodeURIComponent('admedia') + "/";
+				var photoKey = mediaFolderKey + media.name;
+				var upload = new AWS.S3.ManagedUpload({
+					params: {
+						Bucket: bucketName,
+						Key: photoKey,
+						Body: media,
+					}
+				});
+
+				var promise = upload.promise();
+				promise.then(
+					function(data) {
+						console.log(data)
 						setProgressDisplay('none');
+						// set up ad object in dynamodb
+						var adParams = {
+							TableName: 'ads',
+							Item: {
+								adId: (userAttributes[0].Value + Math.random()),
+								ownerId: userAttributes[0].Value,
+								active: 'active',
+								ownerCanActivate: true,
+								impressions: 0,
+								adname: adName,
+								promoters:0,
+								mediaFile: data.Key,
+								adtype: 'photo',
+								link: adLink
+							}
+						}
+
+						docClient.put(adParams, (err, data)=>{
+							if (err){
+								setAlertMessage(err.message);
+								setDisplayAlert(true);
+								setAlertSeverity('warning')
+								setProgressDisplay('none');
+								console.log(err)
+							}
+							if (data){
+								var params = {
+									TableName: 'advertisers',
+									Key:{
+										"uid": userAttributes[0].Value
+									},
+									UpdateExpression: "set activeAds = activeAds + :val",
+									ExpressionAttributeValues:{
+										":val": 1
+									},
+									ReturnValues:"UPDATED_NEW"
+								};
+								docClient.update(params, function(err, data) {
+									if (err) {
+										console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+									}
+								});
+								history.push('/advertiser/dashboard/Home')
+							}
+						})
+					},
+					function(err) {
 						setDisplayAlert(true);
 						setAlertSeverity('warning');
-						setAlertMessage(error.message.replace('Firebase', ''));
-					})
-					});
-					
-				} else if(media.type === 'image/jpeg' || media.type == 'image/png'){
-					// upload photo
-					let adRef = ref(storage, `ads/media/photos/${media.name}`)
-					setProgressDisplay('none');
-					setDisplayAlert(true);
-					setAlertSeverity('success');
-					setAlertMessage('uploading photo...');
-					uploadBytes(adRef, media).then((snapshot)=>{
-						photoUrl = snapshot.metadata.fullPath;
-						let newAd = {
-							name: adName.toLowerCase(),
-							description: description,
-							tagline: tagline,
-							link: adLink,
-							type: 'photo',
-							mediaFile: photoUrl,
-							owner: uid,
-							active: true,
-							impressions:0,
-							promoters:0
-						}
-						setDoc(doc(db, 'ads', (uid + adName)), newAd).then(()=>{
-							updateAds(uid);
-						}).catch((error)=>{
-							setAlertSeverity('warning');
-							setAlertMessage(error.message);
-						})
-					})
-				} else{
-					setDisplayAlert(true);
-					setAlertSeverity('warning');
-					setAlertMessage('invalid file format, file must be a PNG, JPEG or mp4');
+						setAlertMessage(err.message);
+						setProgressDisplay('none');
+					}
+				);
+			} else{
+				setDisplayAlert(true);
+				setAlertSeverity('warning');
+				setAlertMessage('invalid file format, file must be a PNG, JPEG or mp4');
 
-					setDisplayButton(true);
-					setProgressDisplay('none');
-				}
-			})
-		} else{
+				setDisplayButton(true);
+				setProgressDisplay('none');
+			}
+		}else{
 			setDisplayAlert(true);
 			setAlertSeverity('warning');
 			setAlertMessage('file is too big, should be 50Mb or less');
@@ -140,25 +226,32 @@ function AdCreation() {
 			setDisplayButton(true);
 			setProgressDisplay('none');
 		}
-		
-		
 	}
 
-	const updateAds = async (uid)=>{
-		// update the number of active ads in the users account
-		setProgressDisplay(true);
-		const userRef = doc(db, "users", uid);
-		await updateDoc(userRef, {
-			activeAds: increment(1)
-		}).then(()=>{
-			history.push('/advertiser/dashboard/Home');
-		}).catch((error)=>{
-				setAlertMessage(error.message);
-				setDisplayAlert(true);
-				setAlertSeverity('warning');
-				setProgressDisplay(true);
-		});
+	function dataURItoBlob(dataURI) {
+		var binary = atob(dataURI.split(',')[1]);
+		var array = [];
+		for(var i = 0; i < binary.length; i++) {
+			array.push(binary.charCodeAt(i));
+		}
+		return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
 	}
+
+	// const updateAds = async (uid)=>{
+	// 	// update the number of active ads in the users account
+	// 	setProgressDisplay(true);
+	// 	const userRef = doc(db, "users", uid);
+	// 	await updateDoc(userRef, {
+	// 		activeAds: increment(1)
+	// 	}).then(()=>{
+	// 		history.push('/advertiser/dashboard/Home');
+	// 	}).catch((error)=>{
+	// 			setAlertMessage(error.message);
+	// 			setDisplayAlert(true);
+	// 			setAlertSeverity('warning');
+	// 			setProgressDisplay(true);
+	// 	});
+	// }
 
 	const handleMedia =(e)=>{
 		if (e.target.files[0]){
@@ -274,31 +367,11 @@ function AdCreation() {
 					
 					<div style={{}}>
 					
-						<p style={{marginBottom:'-.07em'}}>Description</p>
-						
-						<textarea type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em', height:'20em'}}
-						placeholder='describe the product or service you wish to promote' value={description} onChange={(e)=>{setDescription(e.target.value)}}/>
-					
-					</div>
-					
-					<div style={{}}>
-						
-						<p style={{marginBottom:'-.07em'}}>Tagline</p>
-					
-						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} required
-						placeholder='e.g just do it' value={tagline} onChange={(e)=>{setTagline(e.target.value)}}/>
-					
-					</div>
-					
-					<div style={{}}>
-					
 						<p style={{marginBottom:'-.07em'}}>Ad link</p>
 					
 						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}}
-						placeholder='e.g www.myhustle.com/shop' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
+						placeholder='e.g www.mymusic.com/shop' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
 				
 					</div>
 					{displaybutton && (

@@ -10,6 +10,7 @@ import SignUp from './components/general/SignUp';
 import Login from './components/general/Login';
 import ChangePassword from './components/general/ChangePassword';
 import Select from './components/general/Select';
+import ConfirmAccount from './components/general/ConfirmAccount';
  
 import PromoHeader from './components/promoter/PromoHeader'
 import ListOfAds from './components/promoter/ListOfAds'
@@ -25,6 +26,7 @@ import Widthdraw from './components/promoter/Widthdraw';
 import Promotion from './components/general/Promotion';
 import PageNotFound from './components/general/PageNotFound';
 import SearchPage from './components/promoter/SearchPage';
+import {UserProvider} from './contexts/UserContext';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
@@ -35,6 +37,7 @@ import SearchPage from './components/promoter/SearchPage';
 function App() {
   return (
 	  <Router>
+		  <UserProvider>
 		<div className="App" style={{}}>
 			<Route path='/' exact component={Landing}/>
 			<Switch>
@@ -44,6 +47,7 @@ function App() {
 				<Route path='/select' component={Select}/>
 				<Route path='/promotion/:promo' component={Promotion}/>
 				<Route path='/pagenotfound' component={PageNotFound}/>
+				<Route path='/confirmaccount' component={ConfirmAccount}/>
 				
 			</Switch>
 
@@ -51,7 +55,7 @@ function App() {
 			<Switch>
 				<Route path='/advertiser/createad' exact component={AdCreation}/>
 				<Route path='/advertiser/purchaseimpressions' component={Proceed}/>
-				<Route path='/advertiser/addetails/:adid' component={AdDetails}/>
+				<Route path='/advertiser/addetails' component={AdDetails}/>
 			</Switch>
 			<div className='ad_container' >
 				<Route path='/advertiser/dashboard' component={Header}/>
@@ -76,6 +80,7 @@ function App() {
 			<Route path='/promoter/search/:searchterm' component={SearchPage} />
 			
 		</div>
+		</UserProvider>
 	  </Router>
   );
 }
