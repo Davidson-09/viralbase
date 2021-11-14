@@ -6,6 +6,7 @@ import NewAlert from '../general/NewAlert';
 import {auth, db} from '../../fire'
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { getDoc, doc } from '@firebase/firestore';
+import * as AWS from 'aws-sdk';
 
 import {useHistory, Link} from 'react-router-dom';
 
@@ -18,10 +19,9 @@ import './promoaccount.css'
 function PromoAccount() {
 
 	const history = useHistory();
+	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	const [userData, setUserData] = useState({});
-	const [promotionsNum, setPromotionsNum] = useState(0);
-	const [userId, setUserId] = useState();
 
 	const [failed, setFailed] = useState(false); // failed to meet withdrawal requirements
 
@@ -29,26 +29,41 @@ function PromoAccount() {
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'))
 
 	useEffect(()=>{
 		 getUserData()
 	}, [])
 
 	const getUserData =()=>{
+		// get account details
+		getUserAttributes();
+	}
+
+	const getUserAttributes =()=>{
 		setProgressDisplay('block');
-		onAuthStateChanged(auth, async (user)=>{
-			const docRef = doc(db, 'users', user.uid);
-			const docSnap = await getDoc(docRef);
+		var params = {
+			TableName: 'promoters',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": userAttributes[0].Value
+			}
+		}
 
-			if (docSnap.exists()) {
-				const userDoc = docSnap.data();
-				setUserId(docSnap.id)
-
-				setUserData(userDoc)
-				if (userDoc.promotions){
-					setPromotionsNum(userDoc.promotions.length)
-				}
+		docClient.query(params, (err, data)=>{
+			
+			if (err){
 				setProgressDisplay('none')
+				setProgressDisplay('none');
+			} else{
+				var accountDetails = data.Items[0]
+				localStorage.setItem('accountDetails', JSON.stringify(accountDetails));
+				setUserData(accountDetails)
+				setProgressDisplay('none');
 			}
 		})
 	}
@@ -62,7 +77,7 @@ function PromoAccount() {
 			setAlertSeverity('warning');
 			setDisplayAlert(true);
 		} else{
-			history.push(`/promoter/withdraw/${userId}`)
+			history.push(`/promoter/withdraw/${userAttributes[0].Value}`)
 		}
 	}
 
@@ -77,7 +92,7 @@ function PromoAccount() {
 			<div style={{display:'flex', justifyContent:"center", marginTop:"3em"}}>
 			 <img src={profile} style={{width:'10em', height:'10em'}} />
 			</div>
-			<p style={{textAlign:"center", fontSize:'1.5em'}}>{userData.name}</p>
+			<p style={{textAlign:"center", fontSize:'1.5em'}}>{userAttributes[2].Value}</p>
 			<div className='promoaccount_subcontainer'>
 				<div style={{padding:'1em', margin:'1em', backgroundColor:'#E7EDF4', borderRadius:'.5em'}}>
 					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}}>Impressions</p>
@@ -85,20 +100,21 @@ function PromoAccount() {
 				</div>
 				<div style={{padding:'1em', margin:'1em', backgroundColor:'#E1F6FF', borderRadius:'.5em'}}>
 					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}}>Earnings</p>
-					<p style={{margin:0}}>{`N ${userData.earnings}`}</p>
+					<p style={{margin:0}}>N <span>{userData.earnings}</span></p>
 				</div>
 			</div>
 			<div className='promoaccount_adcontainer' style={{padding:'1em', margin:'1em', backgroundColor:'#FDF3F6', borderRadius:'.5em'}}
 				onClick={goToPromotionsPage}>
 					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}} >Ads promoted</p>
-					<p style={{margin:0}}>{promotionsNum} <span style={{fontWeight:'100', marginLeft:'1em'}}>click to see</span></p>
+					<p style={{margin:0}}>{userData.promotions} <span style={{fontWeight:'100', marginLeft:'1em'}}>click to see</span></p>
 			</div>
 			<div style={{textAlign:'center'}}>
 			<button style={{width:'10em', fontSize:'1em', height:'3em', border:'none', borderRadius:'.5em',
 				backgroundColor:'var(--blueprimary)', fontWeight:'700', color:'white'}} onClick={toWidthdraw}>withdraw</button>
 			</div>
-			<Link to='/'><p style={{textAlign:'center', color:'var(--blueprimary)'}} onClick={()=>{signOut(auth)}}>log out</p></Link>
 			{failed && <p style={{textAlign:'center', color:'red'}}>you must have at least N5000 in earnings to withdraw</p>}
+			<Link to='/'><p style={{textAlign:'center', color:'var(--blueprimary)'}} onClick={()=>{signOut(auth)}}>log out</p></Link>
+			
 		</div>
 	)
 }

@@ -138,6 +138,8 @@ function SignUp({match}){
 				impressions: 0,
 				uid: userSub,
 				earnings:0,
+				promotedAds:[],
+				listOfPromotions:[]
 			}
 		}
 

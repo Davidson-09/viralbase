@@ -29,13 +29,13 @@ function PromoHeader() {
 		  <div style={{paddingLeft:"1em", paddingRight:'1em'}}>
 			  <div className='sub_container' style={{display:'flex', width:'100%', justifyContent:'space-between'}}>
 					<p className='logo' style={{color:'var(--blueprimary)', fontWeight:800, textAlign:'center', fontSize:'2em', flex:'1'}}>viralbase</p>
-					{/*<div className="promo__header__right" style={{marginTop:'2.5em', color:'var(--blueprimary)'}}>
+					<div className="promo__header__right" style={{marginTop:'2.5em', color:'var(--blueprimary)'}}>
 						<MenuIcon onClick={showMenu} className='promo_header_menuicon'/>
 					</div>
 					<ul className='list' style={{display:'none', listStyle:'none'}}>
 						<li><Link to='/promoter/front/home' style={{textDecoration:'none', color:'black'}}>Home</Link></li>
 						<li><Link to='/promoter/front/account' style={{textDecoration:'none', color:'black'}}>Account</Link></li>
-	  				</ul>*/}
+	  				</ul>
 				</div>
 				<div style={{display:'flex', backgroundColor:'#D2E0F2', padding:'1em', height:'2em', borderRadius:'2em',
 					margin:'auto', maxWidth:'40em'}}>

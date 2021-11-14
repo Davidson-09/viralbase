@@ -118,39 +118,43 @@ function Promotion({match}) {
 			} else {
 				var promotion = data.Items[0];
 				console.log(promotion)
-				// const res = await axios.get('https://geolocation-db.com/json/');
-				// const ip = res.data.IPv4;
-				// let ispresent = false;
-				// // check if the device ip address already exists in the promotion's array of addresses
-				// if (promotion.addresses){
-				// 	promotion.addresses.forEach((address)=>{
-				// 		if (address === ip){
-				// 			ispresent = true;
-				// 		}
-				// 	})
-				// }
-
-				// increment the number of impressions for promotion
+				const res = await axios.get('https://geolocation-db.com/json/');
+				const ip = res.data.IPv4;
+				let ispresent = false;
+				// check if the device ip address already exists in the promotion's array of addresses
+				if (promotion.addresses){
+					promotion.addresses.forEach((address)=>{
+						if (address === ip){
+							ispresent = true;
+						}
+					})
+				}
+				if (ispresent){
+					window.location.replace(promotion.adlink);
+				} else {
+					//increment the number of impressions for promotion
+					var params = {
+						TableName: 'promotions',
+						Key:{
+							"promotionId": promotion.promotionId,
+							"promoterId": promotion.promoterId
+						},
+						UpdateExpression: "set impressions = impressions + :val, addresses = list_append(addresses,:address)",
+						ExpressionAttributeValues:{
+							":val": 1,
+							":address": [ip]
+						},
+						ReturnValues:"UPDATED_NEW"
+					};
+					docClient.update(params, function(err, data) {
+						if (err) {
+							console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+						} else{
+							window.location.replace(promotion.adlink);
+						}
+					});
+				}
 				
-				var params = {
-					TableName: 'promotions',
-					Key:{
-						"promotionId": promotion.promotionId,
-						"promoterId": promotion.promoterId
-					},
-					UpdateExpression: "set impressions = impressions + :val",
-					ExpressionAttributeValues:{
-						":val": 1
-					},
-					ReturnValues:"UPDATED_NEW"
-				};
-				docClient.update(params, function(err, data) {
-					if (err) {
-						console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-					} else{
-						window.location.replace(`https://${promotion.adlink}`);
-					}
-				});
 			}
 		});
 	}

@@ -2,102 +2,104 @@ import React, { useState, useEffect } from 'react'
 
 import SpinnerDiv from '../general/SpinnerDiv';
 import NewAlert from '../general/NewAlert';
-
-import { db, storage, auth } from '../../fire';
-import { doc, getDoc, collection, addDoc, setDoc,  updateDoc, increment, arrayUnion } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
-import {  onAuthStateChanged } from "firebase/auth";
 import ReactPlayer from 'react-player'
+import * as AWS from 'aws-sdk';
 
-function PromotionDetails({match}) {
+function PromotionDetails() {
 
 	const [progressDisplay, setProgressDisplay] = useState('none');
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
+	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	const [isVideo, setIsVideo] = useState(false);
 	const [mediaUrl, setMediaUrl] = useState();
-	const [promo, setPromo] = useState({id:'', data:{}});
+	const promo = JSON.parse(localStorage.getItem('currentPromotion'))
 
-	const [domain, setDomain] = useState()
+	const domain = window.location.host
+	const bucketName = 'viralbaseadsbucket'
 
-	const [ad, setAd] = useState({id:'', data:{}});
+	const s3 = new AWS.S3({
+		apiVersion: "2006-03-01",
+		params: { Bucket: bucketName }
+	});
+
+	const [ad, setAd] = useState({});
 
 	useEffect(()=>{
-		getPromo();
+		console.log(promo)
+		getAd();
 	}, [])
 
 
-	const loadMedia =(ad)=>{
-		if (ad.data.type === 'photo'){
-			getDownloadURL(ref(storage, ad.data.mediaFile)).then((url)=>{
-				setMediaUrl(url)
-			})
-		} else {
-			// it is a video
-			getDownloadURL(ref(storage, ad.data.mediaFile)).then(async (url)=>{
-			const media = await fetch(url);
-			const mediaBlob = await media.blob();
-			const mediaUrl = URL.createObjectURL(mediaBlob);
-			setMediaUrl(mediaUrl);
-			})
-		}
+	const loadMedia =async (item)=>{
+		setProgressDisplay('block')
+		const params = {
+			Bucket: bucketName,
+			Expires: 3000,
+			Key: item.mediaFile, // this key is the S3 full file path (ex: mnt/sample.txt)
+		};
+		const url = await s3.getSignedUrl('getObject', params)
+
+		const media = await fetch(url);
+		const mediaBlob = await media.blob();
+		const mediaUrl = URL.createObjectURL(mediaBlob);
+		setMediaUrl(mediaUrl);
+		setProgressDisplay('none')
 		
 	}
 
-	const getPromo = async ()=>{
-		setProgressDisplay('block');
-		// get the promotion
-		// then get the related ad
-		const promoRef = doc(db, 'promotions', match.params.promotion);
-		const promoSnap = await getDoc(promoRef);
-		setDomain(window.location.host)
-
-		if (promoSnap.exists()) {
-			setPromo({id: promoSnap.id, data: promoSnap.data()});
-			getAd(promoSnap.data().ad)
-			setProgressDisplay('none');
+	const getAd =()=>{
+		var params = {
+			"TableName": "ads",
+			"IndexName": "adId-index",
+			"KeyConditionExpression": "adId = :a",
+			"ExpressionAttributeValues": {
+				":a": promo.adId
+			},
+			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, link",
+			"ScanIndexForward": false
 		}
-	}
 
-	const getAd = async (id)=>{
-		const adRef = doc(db, 'ads', id);
-		const adSnap = await getDoc(adRef);
-
-		if (adSnap.exists()) {
-			setAd({id: adSnap.id, data: adSnap.data()});
-			loadMedia({id: adSnap.id, data: adSnap.data()})
-			if (adSnap.data().type === 'video'){
-				setIsVideo(true)
+		docClient.query(params, function(err, data) {
+			if (err) {
+				setProgressDisplay('none')
+				console.log(err)
+			} else {
+				console.log(data)
+				setProgressDisplay('none')
+				setAd(data.Items[0])
+				if (data.Items[0].adtype === 'video'){
+					setIsVideo(true)
+				}
+				loadMedia(data.Items[0])
 			}
-			setProgressDisplay('none');
-		}
+		})
 	}
-
 
 	const downloadMedia = async ()=>{
-		console.log('running')
-		getDownloadURL(ref(storage, ad.data.mediaFile)).then(async(url)=>{
-			const media = await fetch(url);
-			const mediaBlob = await media.blob();
-			const mediaUrl = URL.createObjectURL(mediaBlob);
+		console.log(mediaUrl)
+		const anchor = document.createElement('a');
+		anchor.href = mediaUrl;
+		if (isVideo){
+			anchor.download = 'adfile.mp4';
+		} else{
+			anchor.download = 'adfile.png';
+		}
+		
 
-			const anchor = document.createElement('a');
-			anchor.href = mediaUrl;
-			anchor.download = 'adfile';
+		document.body.appendChild(anchor);
+		anchor.click();
+		document.body.removeChild(anchor);
 
-			document.body.appendChild(anchor);
-			anchor.click();
-			document.body.removeChild(anchor);
+		URL.revokeObjectURL(mediaUrl);
 
-			URL.revokeObjectURL(mediaUrl);
-		})
 
 	}
 
 	const copyLink =()=>{
-		navigator.clipboard.writeText(`${domain}/promotion/${match.params.promotion}`)
+		navigator.clipboard.writeText(`${domain}/promotion/${promo.promotionId}`)
 		setAlertMessage('link copied');
 		setAlertSeverity('success')
 		setDisplayAlert(true)
@@ -126,23 +128,14 @@ function PromotionDetails({match}) {
 						</div>
 						<div style={{}}>
 							<div >
-								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{ad.data.name}</p>
+								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{ad.adname}</p>
 							</div>
 							<button style={{marginTop:"1em", border:'none', width:"10em",
 								height:'3em', fontSize:'1em', borderRadius:'.5em'}} onClick={downloadMedia}>download media file</button>
 						</div>
-						<div>
-							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Description:</p>
-							<p style={{width:'100%', overflowY:'auto', maxHeight:"10em"}}>{ad.data.description}</p>
-							<button onClick={copyDescription}>copy description</button>
-						</div>
-						<div>
-							<p style={{marginBottom:'-.5em', fontWeight:"bold"}}>Tag line</p>
-							<p style={{width:'100%', overflowY:'auto', maxHeight:"2.5em"}} >{ad.data.tagline}</p>
-						</div>
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
-								<p style={{overflow:'auto'}}>{`${domain}/promotion/${match.params.promotion}`}</p>
+								<p style={{overflow:'auto'}}>{`${domain}/promotion/${promo.promotionId}`}</p>
 								<button onClick={copyLink}>copy link</button>
 						</div>
 				</div>

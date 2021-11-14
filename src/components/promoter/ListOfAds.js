@@ -11,9 +11,11 @@ function ListOfAds() {
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [status, setStatus] = useState('loading...');
 	const docClient = new AWS.DynamoDB.DocumentClient()
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'))
 
 	useEffect(()=>{
 		getAds()
+		getUserAttributes();
 	},[])
 
 	const getAds =()=>{
@@ -41,6 +43,30 @@ function ListOfAds() {
 		})
 	}
 
+	const getUserAttributes =()=>{
+		var params = {
+			TableName: 'promoters',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": userAttributes[0].Value
+			}
+		}
+
+		docClient.query(params, (err, data)=>{
+			
+			if (err){
+				setProgressDisplay('none')
+			} else{
+				var accountDetails = data.Items[0]
+				localStorage.setItem('accountDetails', JSON.stringify(accountDetails)) 
+			}
+		})
+	}
+
 	return (
 		<div>
 			<SpinnerDiv show={progressDisplay} />
@@ -48,7 +74,7 @@ function ListOfAds() {
 			<div style={{display:'flex', justifyContent:'center' }}>
 			<div className='list_of_ads' style={{display:'grid', gridTemplateColumns:'auto auto'}}>
 				{ads && ads.map(ad=>(
-					<AdCard key={ad.id} ad={ad}/>
+					<AdCard key={ad.adid} ad={ad}/>
 				))}
 				{!ads && <p>{status}</p>}
 			</div>

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import SpinnerDiv from '../general/SpinnerDiv';
 import NewAlert from '../general/NewAlert';
-
-import { db, storage, auth } from '../../fire';
-import { doc, getDoc, collection, addDoc, setDoc,  updateDoc, increment, arrayUnion } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
-import {  onAuthStateChanged } from "firebase/auth";
 import ReactPlayer from 'react-player'
 import * as AWS from 'aws-sdk';
 
@@ -21,6 +16,7 @@ function AdPage({match}) {
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
 	const [domain, setDomain] = useState()
+	const userAttributes = JSON.parse(localStorage.getItem('userAttributes'))
 
 
 	const [isVideo, setIsVideo] = useState(false);
@@ -41,23 +37,6 @@ function AdPage({match}) {
 		setDomain(window.location.host)
 		getAd();
 	}, [])
-
-	// const getAd = async ()=>{
-	// 	setProgressDisplay('block');
-	// 	 // get the ad from firestore
-	// 	 const adRef = doc(db, 'ads', match.params.ad);
-	// 	 const adSnap = await getDoc(adRef);
-	// 	 setDomain(window.location.host)
-
-	// 	 if (adSnap.exists()) {
-	// 		setAd({id: adSnap.id, data: adSnap.data()});
-	// 		if (adSnap.data().type === 'video'){
-	// 			setIsVideo(true)
-	// 		}
-	// 		loadMedia(adSnap.data());
-	// 		setProgressDisplay('none');
-	// 	}
-	// }
 
 	const getAd =()=>{
 		var params = {
@@ -122,112 +101,133 @@ function AdPage({match}) {
 
 	}
 
-	// const generateLink =  async ()=>{
-	// 	setProgressDisplay('block');
-	// 	let generated = false;
-	// 	// set up a promotion object in firestore
-	// 	onAuthStateChanged(auth, async (user)=>{
-	// 		if (user){
-	// 			// check if the promoter has already generated a link
-	// 		const userRef = doc(db, "users", user.uid);
-    //         const userSnap = await getDoc(userRef);
-	// 		if (userSnap.exists()) {
-	// 			let adlist = userSnap.data().adspromoted;
-	// 			if (adlist){
-	// 				adlist.forEach((aditem) => {
-	// 					if (aditem === ad.id){
-	// 						generated = true
-	// 						console.log(aditem)
-	// 					}
-	// 				});
-	// 			}
-	// 			if (!generated){
-	// 				// create promotion object in firestore
-	// 			  const promoRef = doc(collection(db, "promotions"));
-	// 			  await setDoc(promoRef, {
-	// 				  ad: ad.id,
-	// 				  promoter: user.uid,
-	// 				  link: ad.data.link,
-	// 				  impressions: 0,
-	// 				  name: ad.data.name,
-	// 				  advertiser: ad.data.owner
-	// 				}).then(async ()=>{
-	// 					// update the number of promoters for the ad
-	// 					setPromoId(promoRef.id)
-	// 					const adRef = doc(db, "ads", ad.id);
-	// 					await updateDoc(adRef, {
-	// 					  promoters: increment(1)
-	// 					}).then(async ()=>{
-	// 						// add the ad to the promoter's list of promotions
-	// 						const promoterRef = doc(db, "users", user.uid);
-	// 						await updateDoc(promoterRef, {
-	// 						  adspromoted: arrayUnion(ad.id),
-	// 						  promotions: arrayUnion(promoRef.id),
-							  
-	// 					  }).then(()=>{
-	// 						  setProgressDisplay('none');
-	// 					  });
-	// 					});
-						
-	// 					setLinkGenerated(true);
-	  
-	// 				}).catch((error)=>{
-	// 				  setProgressDisplay('none');
-	// 				  setAlertMessage(error.message);
-	// 				  setAlertSeverity('warning')
-	// 				  setDisplayAlert(true)
-	// 				});
-	// 			} else {
-	// 			  setProgressDisplay('none');
-	// 			  setAlertMessage('you have already generated a link for this ad');
-	// 			  setAlertSeverity('warning')
-	// 			  setDisplayAlert(true)
-	// 			}
-	// 		  }
-	// 		} else{
-	// 			// go to promoter sign up page
-	// 			history.push('/signup/promoter')
-	// 		}
-	// 	})
-	// }
-
 	const generateLink=()=>{
+		var isGenerated = false;
+		var accountDetails = {}
+		if (localStorage.getItem('accountDetails')){
+			accountDetails = JSON.parse(localStorage.getItem('accountDetails'));
+		}
 		setProgressDisplay('block');
 		var user = JSON.parse(localStorage.getItem('userAttributes'))
 		if (!user || user === {}){
 			// sign up as a promoter
 			history.push('/signup/promoter')
 		} else{
-			console.log(user)
-			// set up a promotion object in database
-			const promoId = user[0].Value + Math.random()
-			var params = {
-				TableName: 'promotions',
-				Item: {
-					promotionId: promoId,
-					promoterId: user[0].Value,
-					adId: ad.adId,
-					adOwner: ad.owneId,
-					addresses: [],
-					adlink: ad.link,
-					impressions:0
+			// check if the user has already generated a link for this ad before
+			// get promoter account details
+			if (accountDetails && accountDetails != {}){
+				// check whether the user's promotedAds list contains an the adId and ownerId of the current ad
+				if (accountDetails.promotedAds != null){
+					accountDetails.promotedAds.forEach((adItem)=>{
+						if (adItem.adId === ad.adId && adItem.ownerId === ad.ownerId){
+							isGenerated = true  // the promoter is already promoting this ad
+						}
+					})
+				}
+			} else{
+				// if the account details are not saved then get them from database
+				accountDetails = getUserAttributes();
+				localStorage.setItem('accountDetails', JSON.stringify(accountDetails))
+				// now check whether the promoter is already promoting the ad
+				if (accountDetails.promotedAds){
+					accountDetails.promotedAds.forEach((adItem)=>{
+						if (adItem.adId === ad.adId && adItem.ownerId === ad.ownerId){
+							isGenerated = true  // the promoter is already promoting this ad
+						}
+					})
 				}
 			}
-			docClient.put(params, (err, data)=>{
-				if (err){
-					console.log(err)
-					setProgressDisplay('none');
-					setAlertMessage(err.message);
-					setAlertSeverity('warning')
-					setDisplayAlert(true)
-					setProgressDisplay('none');
-				} else{
-					setPromoId(promoId);
-					setLinkGenerated(true);
-					setProgressDisplay('none');
+			if (isGenerated){
+				setProgressDisplay('none');
+				setAlertMessage('you have already generated a link for this ad');
+				setAlertSeverity('warning')
+				setDisplayAlert(true)
+			} else{
+				// set up a promotion object in database
+				const promoId = user[0].Value + Math.random()
+				var params = {
+				TableName: 'promotions',
+					Item: {
+						promotionId: promoId,
+						promoterId: user[0].Value,
+						adId: ad.adId,
+						adOwner: ad.owneId,
+						addresses: [],
+						adlink: ad.link,
+						impressions:0,
+						adname: ad.adname
+					}
 				}
-			})
+				docClient.put(params, (err, data)=>{
+					if (err){
+						console.log(err)
+						setProgressDisplay('none');
+						setAlertMessage(err.message);
+						setAlertSeverity('warning')
+						setDisplayAlert(true)
+						setProgressDisplay('none');
+					} else{
+						
+						// add the ad to the promoters list of promoted ads in the database
+						// and add the promotion to the promoters list of promotions
+						var adDetails = {adId: ad.adId, ownerId: ad.ownerId}
+						var params = {
+							TableName: "promoters",
+							Key: {
+							   uid: userAttributes[0].Value
+							},
+							UpdateExpression: "SET promotedAds = list_append(promotedAds,:ad), listOfPromotions = list_append(listOfPromotions,:promotion), promotions = promotions + :val ",
+							ExpressionAttributeValues: {
+							   ":ad": [adDetails],
+							   ":promotion": [{promotionId:promoId, promoterId:userAttributes[0].Value, adname:ad.adname, adId:ad.adId}],
+							   ':val' : 1
+							},
+							ReturnValues: "UPDATED_NEW"
+						};
+
+						docClient.update(params, function(err, data){
+							if (err){
+								console.log(err)
+								setProgressDisplay('none');
+							} else{
+								// save the updated account details
+								accountDetails.promotedAds.push({adDetails});
+								localStorage.setItem('accountDetails',JSON.stringify(accountDetails))
+								setPromoId(promoId);
+								setLinkGenerated(true);
+								setProgressDisplay('none');
+							}
+						})
+					}
+				})
+			}
+			
+			
 		}
+	}
+
+	const getUserAttributes =()=>{
+		var params = {
+			TableName: 'promoters',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": userAttributes[0].Value
+			}
+		}
+
+		docClient.query(params, (err, data)=>{
+			
+			if (err){
+				setProgressDisplay('none')
+			} else{
+				var accountDetails = data.Items[0]
+				return accountDetails
+			}
+		})
 	}
 
 	const copyLink =()=>{

@@ -40,7 +40,8 @@ function App() {
 	  <Router>
 		  <UserProvider>
 		<div className="App" style={{}}>
-			<Route path='/' exact component={Landing2}/>
+			<Route path='/' exact component={Landing}/>
+			<Route path='/music' exact component={Landing2}/>
 			<Switch>
 				<Route path='/login' component={Login}/>
 				<Route path='/signup/:role' component={SignUp}/>
@@ -76,7 +77,7 @@ function App() {
 				
 			</Switch>
 			<Route path='/promoter/addetails/:ad' component={AdPage}/>
-			<Route path='/promoter/promotionDetails/:promotion' component={PromotionDetails}/>
+			<Route path='/promoter/promotionDetails' component={PromotionDetails}/>
 			<Route path='/promoter/withdraw/:user' component={Widthdraw}/>
 			<Route path='/promoter/search/:searchterm' component={SearchPage} />
 			
