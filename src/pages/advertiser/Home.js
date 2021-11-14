@@ -25,6 +25,7 @@ function Home() {
 	const [progressDisplay, setProgressDisplay] = useState('none')
 
 	const [showPurchasePrompt, setShowPurchasePrompt] = useState(false);
+	const [isEmpty, setIsEmpty] = useState(true)
 
 	useEffect(()=>{
 		getUserData()
@@ -73,6 +74,9 @@ function Home() {
 			if (err) {
 				console.error('something went wrong');
 			} else {
+				if (data.Items.length > 0){
+					setIsEmpty(false);
+				}
 				setAdList(data.Items)
 			}
 			setProgressDisplay('none')
@@ -132,7 +136,7 @@ function Home() {
 				</div>
 				<div className='home_ad_list' style={{display:'grid', gridTemplateColumns:'auto auto', marginLeft:'1em', overflow:'auto',
 					maxHeight:'25em'}}>
-					{!(adList) && (<Empty/>)}
+					{isEmpty && (<Empty/>)}
 					{adList && adList.map(ad =>
 						<AdCard ad={ad} key={ad.id} />
 					)}
