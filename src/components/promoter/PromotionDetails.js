@@ -4,6 +4,7 @@ import SpinnerDiv from '../general/SpinnerDiv';
 import NewAlert from '../general/NewAlert';
 import ReactPlayer from 'react-player'
 import * as AWS from 'aws-sdk';
+import placeholder from '../../res/adplaceholder.svg'
 
 function PromotionDetails() {
 
@@ -14,7 +15,7 @@ function PromotionDetails() {
 	const docClient = new AWS.DynamoDB.DocumentClient()
 
 	const [isVideo, setIsVideo] = useState(false);
-	const [mediaUrl, setMediaUrl] = useState();
+	const [mediaUrl, setMediaUrl] = useState(placeholder);
 	const promo = JSON.parse(localStorage.getItem('currentPromotion'))
 
 	const domain = window.location.host
@@ -42,10 +43,10 @@ function PromotionDetails() {
 		};
 		const url = await s3.getSignedUrl('getObject', params)
 
-		const media = await fetch(url);
-		const mediaBlob = await media.blob();
-		const mediaUrl = URL.createObjectURL(mediaBlob);
-		setMediaUrl(mediaUrl);
+		// const media = await fetch(url);
+		// const mediaBlob = await media.blob();
+		// const mediaUrl = URL.createObjectURL(mediaBlob);
+		setMediaUrl(url);
 		setProgressDisplay('none')
 		
 	}

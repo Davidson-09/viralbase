@@ -78,6 +78,8 @@ function AdCreation() {
 								function(data) {
 									console.log(data)
 									// set up ad object in dynamodb
+									var link = adLink.replace('https://', '');
+									var link = adLink.replace('http://', '');
 									var adParams = {
 										TableName: 'ads',
 										Item: {
@@ -86,12 +88,12 @@ function AdCreation() {
 											active: 'active',
 											ownerCanActivate: true,
 											impressions: 0,
-											adname: adName,
+											adname: adName.toLowerCase(),
 											promoters:0,
 											mediaFile: data.Key,
 											adtype: 'video',
 											adthumbnail: thumbkey,
-											link: adLink
+											link: link
 										}
 									}
 
@@ -158,6 +160,8 @@ function AdCreation() {
 						console.log(data)
 						setProgressDisplay('none');
 						// set up ad object in dynamodb
+						var link = adLink.replace('https://', '');
+						var link = adLink.replace('http://', '');
 						var adParams = {
 							TableName: 'ads',
 							Item: {
@@ -166,11 +170,11 @@ function AdCreation() {
 								active: 'active',
 								ownerCanActivate: true,
 								impressions: 0,
-								adname: adName,
+								adname: adName.toLowerCase(),
 								promoters:0,
 								mediaFile: data.Key,
 								adtype: 'photo',
-								link: adLink
+								link: link
 							}
 						}
 

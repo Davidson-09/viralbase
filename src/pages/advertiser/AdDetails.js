@@ -5,6 +5,7 @@ import NewAlert from '../../components/general/NewAlert';
 
 import { useHistory } from 'react-router-dom';
 import ReactPlayer from 'react-player'
+import placeholder from '../../res/adplaceholder.svg'
 
 import * as AWS from 'aws-sdk';
 
@@ -21,7 +22,7 @@ function AdDetails({match}) {
 	const [buttonColor, setButtonColor] = useState(red);
 	const [buttonText, setButtonText] = useState('deactivate');
 	const [isVideo, setIsVideo] = useState(false);
-	const [mediaUrl, setMediaUrl] = useState();
+	const [mediaUrl, setMediaUrl] = useState(placeholder);
 
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
@@ -72,10 +73,10 @@ function AdDetails({match}) {
 		};
 		const url = await s3.getSignedUrl('getObject', params)
 
-		const media = await fetch(url);
-		const mediaBlob = await media.blob();
-		const mediaUrl = URL.createObjectURL(mediaBlob);
-		setMediaUrl(mediaUrl);
+		// const media = await fetch(url);
+		// const mediaBlob = await media.blob();
+		// const mediaUrl = URL.createObjectURL(mediaBlob);
+		setMediaUrl(url);
 	}
 
 	const changeMode = async ()=>{

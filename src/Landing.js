@@ -51,8 +51,8 @@ function Landing() {
 				marginBottom:'3em'}}>
 				<div>
 					<h1 className='landing_text' style={{textAlign:'center'}}>
-						Get attention for <br/>
-						<span style={{color:'var(--blueprimary)'}}> your hustle</span>
+						Promote your hustle <br/>
+						<span style={{color:'var(--blueprimary)'}}> without breaking the bank</span>
 					</h1>
 					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> promote their goods, services, music,<br/> movies, events and so much more.</p>
 					<div className='landing_cta_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>

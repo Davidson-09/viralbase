@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import './adCard.css'
+import placeholder from '../../res/adplaceholder.svg'
 
 import * as AWS from 'aws-sdk';
 
@@ -10,7 +11,7 @@ function AdCard({ad}){
 	const history = useHistory();
 
 	const [impressions, setImpressions] = useState(0);
-	const [image, setImage] = useState();
+	const [image, setImage] = useState(placeholder);
 	const bucketName = 'viralbaseadsbucket'
 
 	const s3 = new AWS.S3({
@@ -31,10 +32,10 @@ function AdCard({ad}){
 			};
 			const url = await s3.getSignedUrl('getObject', params)
 
-			const photo = await fetch(url);
-			const photoBlob = await photo.blob();
-			const photoUrl = URL.createObjectURL(photoBlob);
-			setImage(photoUrl);
+			// const photo = await fetch(url);
+			// const photoBlob = await photo.blob();
+			// const photoUrl = URL.createObjectURL(photoBlob);
+			setImage(url);
 		} else {
 			const params = {
 				Bucket: bucketName,
@@ -43,10 +44,10 @@ function AdCard({ad}){
 			};
 			const url = await s3.getSignedUrl('getObject', params)
 
-			const photo = await fetch(url);
-			const photoBlob = await photo.blob();
-			const photoUrl = URL.createObjectURL(photoBlob);
-			setImage(photoUrl);
+			// const photo = await fetch(url);
+			// const photoBlob = await photo.blob();
+			// const photoUrl = URL.createObjectURL(photoBlob);
+			setImage(url);
 		}
 	}
 

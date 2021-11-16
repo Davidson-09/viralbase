@@ -38,7 +38,6 @@ import {UserProvider} from './contexts/UserContext';
 function App() {
   return (
 	  <Router>
-		  <UserProvider>
 		<div className="App" style={{}}>
 			<Route path='/' exact component={Landing}/>
 			<Route path='/music' exact component={Landing2}/>
@@ -82,7 +81,10 @@ function App() {
 			<Route path='/promoter/search/:searchterm' component={SearchPage} />
 			
 		</div>
-		</UserProvider>
+		{/*<footer>
+			contact us:
+			support@myviralbase.com
+		</footer>*/}
 	  </Router>
   );
 }

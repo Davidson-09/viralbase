@@ -3,6 +3,7 @@ import SpinnerDiv from '../general/SpinnerDiv';
 import NewAlert from '../general/NewAlert';
 import ReactPlayer from 'react-player'
 import * as AWS from 'aws-sdk';
+import placeholder from '../../res/adplaceholder.svg'
 
 import { useHistory } from 'react-router-dom';
 
@@ -20,7 +21,7 @@ function AdPage({match}) {
 
 
 	const [isVideo, setIsVideo] = useState(false);
-	const [mediaUrl, setMediaUrl] = useState();
+	const [mediaUrl, setMediaUrl] = useState(placeholder);
 	const [promoId, setPromoId] = useState();
 	const [linkGenerated, setLinkGenerated] = useState(false);
 
@@ -75,10 +76,10 @@ function AdPage({match}) {
 		};
 		const url = await s3.getSignedUrl('getObject', params)
 
-		const media = await fetch(url);
-		const mediaBlob = await media.blob();
-		const mediaUrl = URL.createObjectURL(mediaBlob);
-		setMediaUrl(mediaUrl);
+		// const media = await fetch(url);
+		// const mediaBlob = await media.blob();
+		// const mediaUrl = URL.createObjectURL(mediaBlob);
+		setMediaUrl(url);
 		setProgressDisplay('none')
 	}
 
@@ -151,7 +152,7 @@ function AdPage({match}) {
 						promotionId: promoId,
 						promoterId: user[0].Value,
 						adId: ad.adId,
-						adOwner: ad.owneId,
+						adOwner: ad.ownerId,
 						addresses: [],
 						adlink: ad.link,
 						impressions:0,

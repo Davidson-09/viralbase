@@ -52,6 +52,10 @@ function Home() {
 				setProgressDisplay('none')
 			} else{
 				setUserData(data.Items[0])
+				const advertiser = data.Items[0];
+				if (advertiser.availableImpressions === 0 && advertiser.activeAds > 0){
+					setShowPurchasePrompt(true)
+				}
 				setProgressDisplay('none')
 			}
 		})
@@ -99,10 +103,12 @@ function Home() {
 			<div className='home_info_div' style={{ justifyContent:'center', alignItems:'center', display:'flex', flexDirection:'column',
 				 marginLeft:'auto', marginRight:'auto'}}>
 				<p style={{fontWeight:'500', color:'var(--blueprimary)', marginBottom:'-1.5em'}}>Available impressions</p>
-				<div style={{display:'flex'}}>
-					<p style={{fontSize:'2em', fontWeight:'bold'}}>{userData.availableImpressions}</p>
-					<AddBoxIcon className='home_add_btn' style={{color:'var(--blueprimary)', marginTop:'1.9em'}}
-						onClick={toImpressionPurchasePage}/>
+				<div style={{textAlign:'center'}} className='home_availableImpressions'>
+					<p style={{fontSize:'2em', fontWeight:'bold', margin:'0', marginTop:'1em'}}
+						>{userData.availableImpressions}</p>
+					<button className='home_add_btn' style={{backgroundColor:'var(--blueprimary)',
+					color:'white', height:'2em', border:'none', borderRadius:'.5em', marginRight:'1em'}}
+					onClick={toImpressionPurchasePage}>Buy impressions</button>
 				</div>
 				<button className='home_big_add_btn' style={{fontSize:'1em', backgroundColor:'var(--blueprimary)',
 					border:'none', paddingTop:'.7em', paddingBottom:'.7em', borderRadius:'.5em',
@@ -126,7 +132,8 @@ function Home() {
 				<div style={{display:'flex', justifyContent:'space-between', marginTop:'1em', paddingLeft:'1em',
 					paddingRight:'1em'}}>
 					<p>Your ads</p>
-					<AddBoxIcon className='home_add_btn' style={{color:'var(--blueprimary)', marginTop:'.7em'}} onClick={toAdCreation}/>
+					<button className='home_add_btn' style={{backgroundColor:'var(--blueprimary)', color:'white', marginTop:'1.1em', border:'none',
+						borderRadius:'.5em', height:'2em', fontSize:'.7em'}} onClick={toAdCreation}> create new ad</button>
 					<Button className='home_createbutton' variant="contained" startIcon={<AddRoundedIcon />} style={{height:'1em', padding:'1.4em',
 					 dropShadow:'none', marginTop:'1.2em', marginLeft:'1.2em', 
 					 maxWidth:'12em', textTransform: 'lowercase', flex: 1, display:'none',

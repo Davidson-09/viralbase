@@ -127,6 +127,11 @@
 	.home_createbutton{
 		display: flex !important;
 	}
+
+	.home_availableImpressions{
+		text-align: left !important;
+		margin-bottom: 2em !important;
+	}
 }
 
 @media (orientation: landscape) {
@@ -197,5 +202,10 @@
 
 	.home_createbutton{
 		display: flex !important;
+	}
+
+	.home_availableImpressions{
+		text-align: left !important;
+		margin-bottom: 2em !important;
 	}
 }

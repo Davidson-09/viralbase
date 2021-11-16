@@ -12,92 +12,10 @@ function Promotion({match}) {
 	useEffect(()=>{
 		execute();
 	},[])
-	// get the related promotion
-	// add fifty naira to the promoters account
-	// add the gotten impression to the promoter, the promotion, the ad and the owner of the ad
-	// subtract the impression from the owner of the ad
-	// redirect to wherever the ad link goes.
-
-	// const execute = async ()=>{
-	// 	//get the related promotion
-	// 	const promoRef = doc(db, 'promotions', match.params.promo);
-	// 	const promoSnap = await getDoc(promoRef);
-	// 	if (promoSnap.exists()) {
-	// 		// get the related advertiser
-	// 		console.log(promoSnap.data())
-	// 		const adRef = doc(db, 'users',promoSnap.data().advertiser);
-	// 		const adSnap = await getDoc(adRef);
-	// 		if (adSnap.exists()){
-	// 			// get the device ip address
-	// 			const res = await axios.get('https://geolocation-db.com/json/');
-	// 			const ip = res.data.IPv4;
-	// 			let ispresent = false;
-	// 			// check if the device ip address already exists in the promotion's array of addresses
-	// 			if (promoSnap.data().addresses){
-	// 				promoSnap.data().addresses.forEach((address)=>{
-	// 					if (address === ip){
-	// 						ispresent = true;
-	// 					}
-	// 				})
-	// 			}
-				
-	// 			if ( ispresent){
-	// 				window.location.replace(`https://${promoSnap.data().link}`);
-	// 			} else {
-	// 				// check if the adertiser has enough impressions
-	// 				if (adSnap.data().availableImpressions > 0){
-	// 					// increment the impressions of the promotion by 1
-	// 					const ref = doc(db, "promotions", match.params.promo);
-	// 					await updateDoc(ref, {
-	// 						impressions: increment(1),
-	// 						addresses: arrayUnion(ip)
-	// 						// the rest will be handled by cloud functions
-	// 						// update the nummber of impressions for the promoter
-	// 					}).then( async ()=>{
-	// 						const ref = doc(db, "users", promoSnap.data().promoter);
-	// 						await updateDoc(ref, {
-	// 							impressions: increment(1), 
-	// 							earnings: increment(100) // give the promoter his/her earnings
-	// 							// update the nummber of impressions for the ad
-	// 						}).then( async ()=>{
-	// 							const ref = doc(db, "ads", promoSnap.data().ad);
-	// 							await updateDoc(ref, {
-	// 								impressions: increment(1)
-	// 								// update the nummber of impressions for the advertiser
-	// 							}).then( async ()=>{
-	// 								const ref = doc(db, "users", promoSnap.data().advertiser);
-	// 								await updateDoc(ref, {
-	// 									totalImpressions: increment(1),
-	// 									availableImpressions: increment(-1)
-	// 									// update the nummber of impressions for the advertiser
-	// 								}).then(()=>{
-	// 									// redirect to the promotions adlink
-	// 								window.location.replace(`https://${promoSnap.data().link}`);	
-	// 								})
-	// 							})
-	// 						})
-
-							
-	// 					})
-	// 				} else {
-	// 					// deactivate the ad
-	// 					const ref = doc(db, "ads", promoSnap.data().ad);
-	// 					await updateDoc(ref, {
-	// 						active: false
-	// 					}).then(()=>{
-	// 						//redirect to 404 page
-	// 						history.push('/pagenotfound')
-	// 					})
-	// 				}
-	// 			}
-				
-	// 		} else {
-	// 			history.push('/pagenotfound')
-	// 		}
-	// 	} else {
-	// 		history.push('/pagenotfound')
-	// 	}
-	// }
+	
+	// update advertiser
+	//update promoter 
+	//update ad
 
 	const execute =async ()=>{
 		//get the promotion
@@ -117,6 +35,7 @@ function Promotion({match}) {
 				console.error('something went wrong');
 			} else {
 				var promotion = data.Items[0];
+
 				console.log(promotion)
 				const res = await axios.get('https://geolocation-db.com/json/');
 				const ip = res.data.IPv4;
@@ -129,32 +48,154 @@ function Promotion({match}) {
 						}
 					})
 				}
+
 				if (ispresent){
-					window.location.replace(promotion.adlink);
-				} else {
-					//increment the number of impressions for promotion
-					var params = {
-						TableName: 'promotions',
-						Key:{
-							"promotionId": promotion.promotionId,
-							"promoterId": promotion.promoterId
-						},
-						UpdateExpression: "set impressions = impressions + :val, addresses = list_append(addresses,:address)",
-						ExpressionAttributeValues:{
-							":val": 1,
-							":address": [ip]
-						},
-						ReturnValues:"UPDATED_NEW"
-					};
-					docClient.update(params, function(err, data) {
-						if (err) {
-							console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-						} else{
-							window.location.replace(promotion.adlink);
-						}
-					});
+					window.location.replace(`https://${promotion.adlink}`);
+				} else{
+					var advertiser = getAdvertiser(promotion.adOwner);
+					if (advertiser.availableImpressions < 1){
+						deactivateAd(promotion.adOwner, promotion.adId)
+					} else{
+						// remove one available imression and add one impression gotten
+						decrementAvailableImpressions(promotion.adOwner)
+						// add one impression to the ad
+						addImpressionToAd(promotion.adOwner, promotion.adId)
+						// add one impression to the promotion and increase earnings
+						addImpressionToPromoterAndIncreaseEarnings(promotion.promoterId)
+						//increment the number of impressions for promotion
+						var params = {
+							TableName: 'promotions',
+							Key:{
+								"promotionId": promotion.promotionId,
+								"promoterId": promotion.promoterId
+							},
+							UpdateExpression: "set impressions = impressions + :val, addresses = list_append(addresses,:address)",
+							ExpressionAttributeValues:{
+								":val": 1,
+								":address": [ip]
+							},
+							ReturnValues:"UPDATED_NEW"
+						};
+						docClient.update(params, function(err, data) {
+							if (err) {
+								console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+							} else{
+								window.location.replace(`https://${promotion.adlink}`);
+							}
+						});
+					}
 				}
 				
+			}
+		});
+	}
+
+	const getAdvertiser =async (adOwner)=>{
+		var params = {
+			TableName: 'advertisers',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": adOwner
+			}
+		}
+
+		await docClient.query(params, (err, data)=>{
+			
+			if (err){
+				console.log(err)
+			} else{
+				return data.Items[0];
+			}
+		})
+	}
+
+	const decrementAvailableImpressions =async(adOwner)=>{
+		// also add to impressions gotten
+		var params = {
+			TableName: 'advertisers',
+			Key:{
+				"uid": adOwner
+			},
+			UpdateExpression: "set availableImpressions = availableImpressions - :val, impressionsGotten = impressionsGotten + :val",
+			ExpressionAttributeValues:{
+				":val": 1
+			},
+			ReturnValues:"UPDATED_NEW"
+		};
+		await docClient.update(params, function(err, data) {
+			if (err) {
+				console.error(err);
+			}
+		});
+	}
+	
+
+	const addImpressionToAd =async(adOwner, adId)=>{
+		var params = {
+			TableName: 'ads',
+			Key:{
+				"ownerId": adOwner,
+				"adId": adId
+			},
+			UpdateExpression: "set impressions = impressions + :a",
+			ExpressionAttributeValues:{
+				":a": 1
+			},
+			ReturnValues:"UPDATED_NEW"
+		};
+
+		await docClient.update(params, function(err, data) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}
+
+	const addImpressionToPromoterAndIncreaseEarnings =async(promoterId)=>{
+		var params = {
+			TableName: "promoters",
+			Key: {
+			   uid: promoterId
+			},
+			UpdateExpression: "SET impressions = impressions + :val, earnings = earnings + :earned ",
+			ExpressionAttributeValues: {
+			   ":val": 1,
+			   ":earned": 50
+			},
+			ReturnValues: "UPDATED_NEW"
+		};
+
+		await docClient.update(params, function(err, data){
+			if (err){
+				console.log(err)
+			} 
+		})
+	}
+
+	const deactivateAd =async(adOwner, adId)=>{
+		var params = {
+			TableName: 'ads',
+			Key:{
+				"ownerId": adOwner,
+				"adId": adId
+			},
+			UpdateExpression: "set active = :a",
+			ExpressionAttributeValues:{
+				":a": 'inactive'
+			},
+			ReturnValues:"UPDATED_NEW"
+		};
+
+		await docClient.update(params, function(err, data) {
+			if (err) {
+				console.log(err);
+			} else {
+				// go to 404 page
+				history.push('/pagenotfound')
 			}
 		});
 	}
