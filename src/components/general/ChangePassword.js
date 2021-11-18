@@ -2,10 +2,11 @@ import React, {useEffect, useState} from 'react'
 import SpinnerDiv from './SpinnerDiv'
 import NewAlert from './NewAlert';
 import { useHistory, Link } from 'react-router-dom';
+import cogPool from '../../UserPool';
+import {CognitoUser, AuthenticationDetails} from 'amazon-cognito-identity-js'
 
 import {auth} from '../../fire'
 import { sendPasswordResetEmail } from "firebase/auth";
-
 
 function ChangePassword() {
 
@@ -19,18 +20,43 @@ function ChangePassword() {
 		// send change password email
 		e.preventDefault();
 		setProgressDisplay('block')
-		sendPasswordResetEmail(auth, email)
-		.then(() => {
-			setProgressDisplay('none')
-			setAlertMessage('Password reset email sent: check your inbox');
-			setAlertSeverity('success');
-			setDisplayAlert(true);
-		})
-		.catch((error) => {
-			setProgressDisplay('none')
-			setAlertMessage(error.message);
-			setAlertSeverity('warning');
-			setDisplayAlert(true);
+		// sendPasswordResetEmail(auth, email)
+		// .then(() => {
+		
+		// })
+		// .catch((error) => {
+		// 	setProgressDisplay('none')
+		// 	setAlertMessage(error.message);
+		// 	setAlertSeverity('warning');
+		// 	setDisplayAlert(true);
+		// });
+
+		const cognitoUser = new CognitoUser({
+			Username: email,
+			Pool: cogPool
+		});
+	
+		// call forgotPassword on cognitoUser
+		cognitoUser.forgotPassword({
+			onSuccess: function(result) {
+				console.log('call result: ' + result);
+				setProgressDisplay('none')
+				setAlertMessage('password reset successful');
+				setAlertSeverity('success');
+				setDisplayAlert(true);
+			},
+			onFailure: function(err) {
+				alert(err);
+				setProgressDisplay('none')
+				setAlertMessage(err.message);
+				setAlertSeverity('warning');
+				setDisplayAlert(true);
+			},
+			inputVerificationCode() { // this is optional, and likely won't be implemented as in AWS's example (i.e, prompt to get info)
+				var verificationCode = prompt('Please input verification code ', '');
+				var newPassword = prompt('Enter new password ', '');
+				cognitoUser.confirmPassword(verificationCode, newPassword, this);
+			}
 		});
 
 	}

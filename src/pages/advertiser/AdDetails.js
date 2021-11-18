@@ -186,7 +186,7 @@ function AdDetails({match}) {
 							<p style={{ width:'70%', overflow:'auto', color:'var(--blueprimary)'}}>{`${window.location.host}/promoter/addetails/${currentAd.adId}`}</p>
 						</div>
 						<button onClick={copyPromoLink}>copy promotion link</button>
-						<p style={{textAlign:'center', marginTop:'1.5em', color:'var(--blueprimary)'}}>people promoting this ad: <span style={{color:'black'}}>{currentAd.promoters}</span></p>
+						{/* <p style={{textAlign:'center', marginTop:'1.5em', color:'var(--blueprimary)'}}>people promoting this ad: <span style={{color:'black'}}>{currentAd.promoters}</span></p> */}
 						<div style={{diaplay:'flex', textAlign:'center', width:'100%',
 							marginTop:'2em'}}>
 							<button style={{fontSize:'1em', padding:"1em", borderRadius:'.6em', width:'10em',
