@@ -24,6 +24,7 @@ function AdCreation() {
 
 	const [adName, setAdName] = useState('');
 	const [adLink, setAdLink] = useState('');
+	const [adDescription, setAdDescription] = useState('');
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [alertMessage, setAlertMessage] = useState('');
@@ -46,7 +47,7 @@ function AdCreation() {
 			// upload media file to storage
 			if (media.type === 'video/mp4'){
 				// upload the thumbnail
-				var thumbnailFolderKey = encodeURIComponent('ads') + "/" + encodeURIComponent('thumbnails') + "/";
+				var thumbnailFolderKey = encodeURIComponent('posts') + "/" + encodeURIComponent('thumbnails') + "/";
 				var thumbnailKey = thumbnailFolderKey + media.name;
 				generateThumbnail(window.URL.createObjectURL(media)).then((thumbnail)=>{
 					var blobData = dataURItoBlob(thumbnail);
@@ -63,7 +64,7 @@ function AdCreation() {
 						function(data) {
 							var thumbkey = data.Key
 							// upload the video
-							var mediaFolderKey = encodeURIComponent('ads') + '/' + encodeURIComponent('admedia') + "/";
+							var mediaFolderKey = encodeURIComponent('posts') + '/' + encodeURIComponent('postmedia') + "/";
 							var videoKey = mediaFolderKey + media.name;
 							var upload = new AWS.S3.ManagedUpload({
 								params: {
@@ -84,7 +85,7 @@ function AdCreation() {
 										TableName: 'ads',
 										Item: {
 											adId: (userAttributes[0].Value + Math.random()),
-											ownerId: userAttributes[0].Value,
+											ownerId: userAttributes[3].Value,
 											active: 'active',
 											ownerCanActivate: true,
 											impressions: 0,
@@ -93,7 +94,8 @@ function AdCreation() {
 											mediaFile: data.Key,
 											adtype: 'video',
 											adthumbnail: thumbkey,
-											link: link
+											link: link,
+											adDescription: adDescription
 										}
 									}
 
@@ -109,7 +111,7 @@ function AdCreation() {
 											var params = {
 												TableName: 'advertisers',
 												Key:{
-													"uid": userAttributes[0].Value
+													"uid": userAttributes[3].Value
 												},
 												UpdateExpression: "set activeAds = activeAds + :val",
 												ExpressionAttributeValues:{
@@ -122,7 +124,7 @@ function AdCreation() {
 													console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
 												}
 											});
-											history.push('/advertiser/dashboard/Home')
+											history.push('/influencer/dashboard/Home')
 										}
 									})
 								},
@@ -144,7 +146,7 @@ function AdCreation() {
 				})
 			} else if(media.type === 'image/jpeg' || media.type == 'image/png'){
 				// upload the photo
-				var mediaFolderKey = encodeURIComponent('ads') + '/' + encodeURIComponent('admedia') + "/";
+				var mediaFolderKey = encodeURIComponent('posts') + '/' + encodeURIComponent('postmedia') + "/";
 				var photoKey = mediaFolderKey + media.name;
 				var upload = new AWS.S3.ManagedUpload({
 					params: {
@@ -165,8 +167,8 @@ function AdCreation() {
 						var adParams = {
 							TableName: 'ads',
 							Item: {
-								adId: (userAttributes[0].Value + Math.random()),
-								ownerId: userAttributes[0].Value,
+								adId: (userAttributes[3].Value + Math.random()),
+								ownerId: userAttributes[3].Value,
 								active: 'active',
 								ownerCanActivate: true,
 								impressions: 0,
@@ -174,7 +176,8 @@ function AdCreation() {
 								promoters:0,
 								mediaFile: data.Key,
 								adtype: 'photo',
-								link: link
+								link: link,
+								adDescription: adDescription
 							}
 						}
 
@@ -203,7 +206,7 @@ function AdCreation() {
 										console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
 									}
 								});
-								history.push('/advertiser/dashboard/Home')
+								history.push('/influencer/dashboard/Home')
 							}
 						})
 					},
@@ -355,27 +358,38 @@ function AdCreation() {
 			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
 			<div className="adcreation_form_div" style={{backgroundColor:'white', paddingTop:'2em', margin:'auto'}}  >
 				
-				<p style={{fontSize:'2em', fontWeight:'bold', color:'var(--blueprimary)', textAlign:'center'}}>Create new ad</p>
+				<p style={{fontSize:'2em', fontWeight:'bold', color:'var(--blueprimary)', textAlign:'center'}}>Create new post</p>
 				
 				<form style={{padding:'1em'}} onSubmit={uploadAd}>
 					
 					<div style={{}}>
 				
-						<p style={{marginBottom:'-.07em'}}>Name the ad</p>
+						<p style={{marginBottom:'-.07em'}}>Name the post</p>
 				
 						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}}
 						placeholder='the ad name should only be lower case letters' required value={adName} onChange={(e)=>{setAdName(e.target.value)}}/>
 					
 					</div>
+
+					<div style={{}}>
+				
+						<p style={{marginBottom:'-.07em'}}>Description</p>
+				
+						<textarea type="text" style={{width:'90%', height:'5em', backgroundColor:'#F6F6F6', border:'none',
+							padding:'1em', fontSize:'1em'}}
+						placeholder='tell your promoters a little more about this post'
+						 required value={adDescription} onChange={(e)=>{setAdDescription(e.target.value)}}/>
+					
+					</div>
 					
 					<div style={{}}>
 					
-						<p style={{marginBottom:'-.07em'}}>Ad link</p>
+						<p style={{marginBottom:'-.07em'}}>link</p>
 					
 						<input type="text" style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
 							padding:'1em', fontSize:'1em'}}
-						placeholder='e.g www.mymusic.com/shop' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
+						placeholder='e.g www.mymusic.com/play' required value={adLink} onChange={(e)=>{setAdLink(e.target.value)}}/> 
 				
 					</div>
 					{displaybutton && (

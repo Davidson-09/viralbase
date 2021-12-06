@@ -25,7 +25,7 @@ function Select() {
 				<p style={{textAlign:'center'}}>Who are you?</p>
 				<div style={{textAlign:'center', margin:'1em'}}>
 					<button onClick={adAction} style={{fontSize:'1em', minWidth:'10em', padding:'1em', fontWeight:'bold',
-						 backgroundColor:'var(--blueprimary)', border:'none', color:'white', borderRadius:'.5em'}}>An Advertiser</button>
+						 backgroundColor:'var(--blueprimary)', border:'none', color:'white', borderRadius:'.5em'}}>An Influencer</button>
 				</div>
 				<div style={{textAlign:'center'}}>
 					<button onClick={proAction} style={{fontSize:'1em', minWidth:'10em', padding:'1em', fontWeight:'bold',

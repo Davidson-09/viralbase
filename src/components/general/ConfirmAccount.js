@@ -38,7 +38,7 @@ function ConfirmAccount() {
 					}else{
 						localStorage.setItem('userAttributes', JSON.stringify(data));
 						if (userCredentials.role === 'advertiser'){
-							history.push('/advertiser/dashboard/Home')
+							history.push('/influencer/dashboard/Home')
 						} else{
 							// the user is a promoter
 							history.push('/promoter/front/home')

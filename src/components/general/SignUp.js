@@ -23,10 +23,12 @@ function SignUp({match}){
 	const [showPurposeBox, setShowPurposeBox] = useState(false);
 	const [purpose, setPurpose] = useState();
 
-	const[progressDisplay, setProgressDisplay] = useState('none');
+	const [progressDisplay, setProgressDisplay] = useState('none');
 	const [alertMessage, setAlertMessage] = useState('');
 	const [alertSeverity, setAlertSeverity] = useState('');
 	const [displayAlert, setDisplayAlert] = useState(false);
+
+	const [nameInUse, setNameInUse] = useState(false); // if the chosen user name is in use
 
 	const history = useHistory();
 
@@ -45,74 +47,82 @@ function SignUp({match}){
 		e.preventDefault();
 
 		setProgressDisplay('block');
-
-		if (match.params.role === 'advertiser'){
-			const role = 'advertiser';
-			const attributeList = [];
-			attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'advertiser'}))
-			attributeList.push(new CognitoUserAttribute({Name:"custom:purpose",Value: purpose}))
-			attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
-			attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
-			attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
-
-			cogPool.signUp(email, password, attributeList, null, (err, data)=>{
-				if (err){
-					console.log(err)
-					setAlertMessage(err.message);
-					setDisplayAlert(true);
-					setAlertSeverity('warning')
-				}
-				console.log(data);
-				setProgressDisplay('none');
-
-				if (data){
-					// set up user account in dynamodbs
-					console.log(data.userSub);
-					const userCredentials = {email, password, role}
-					localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
-					setUpAdvertiser(data.userSub);
+		if (!nameInUse){
+			if (match.params.role === 'advertiser'){
+				const role = 'advertiser';
+				const attributeList = [];
+				attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'advertiser'}))
+				attributeList.push(new CognitoUserAttribute({Name:"custom:purpose",Value: purpose}))
+				attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
+				attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
+				attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
+	
+				cogPool.signUp(email, password, attributeList, null, (err, data)=>{
+					if (err){
+						console.log(err)
+						setAlertMessage(err.message);
+						setDisplayAlert(true);
+						setAlertSeverity('warning')
+					}
+					console.log(data);
+					setProgressDisplay('none');
+	
+					if (data){
+						// set up user account in dynamodbs
+						console.log(data.userSub);
+						const userCredentials = {email, password, role}
+						localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
+						setUpAdvertiser(name);
+						
+					}
+				})
+			} else{
+				const role = 'promoter';
+				const attributeList = [];
+				attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'promoter'}))
+				attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
+				attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
+				attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
+	
+				cogPool.signUp(email, password, attributeList, null, (err, data)=>{
+					if (err){
+						console.log(err)
+						setAlertMessage(err.message);
+						setDisplayAlert(true);
+						setAlertSeverity('warning')
+					}
+					console.log(data);
+					if (data){
+						// set up advertiser account in dynamodb
+						// go to promoter page
+						const userCredentials = {email, password, role}
+						localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
+						setupPromoter(name)
+					}
+					setProgressDisplay('none');
+	
 					
-				}
-			})
+				})
+			}
+			
 		} else{
-			const role = 'promoter';
-			const attributeList = [];
-			attributeList.push(new CognitoUserAttribute({Name:"custom:role",Value: 'promoter'}))
-			attributeList.push(new CognitoUserAttribute({Name:"phone_number",Value: phone}))
-			attributeList.push(new CognitoUserAttribute({Name:"email",Value: email}))
-			attributeList.push(new CognitoUserAttribute({Name:"name",Value: name}))
-
-			cogPool.signUp(email, password, attributeList, null, (err, data)=>{
-				if (err){
-					console.log(err)
-					setAlertMessage(err.message);
-					setDisplayAlert(true);
-					setAlertSeverity('warning')
-				}
-				console.log(data);
-				if (data){
-					// set up advertiser account in dynamodb
-					// go to promoter page
-					const userCredentials = {email, password, role}
-					localStorage.setItem('userCredentials', JSON.stringify(userCredentials));
-					setupPromoter(data.userSub)
-				}
-				setProgressDisplay('none');
-
-				
-			})
+			setAlertMessage('This username is already being used');
+			setDisplayAlert(true);
+			setAlertSeverity('warning')
+			setProgressDisplay('none')
 		}
 		
 	}
 
-	const setUpAdvertiser =(userSub)=>{
+	const setUpAdvertiser =(name)=>{
 		var params = {
 			TableName: 'advertisers',
 			Item: {
 				availableImpressions: 0,
 				activeAds: 0,
-				uid: userSub,
-				impressionsGotten:0
+				uid: name,
+				impressionsGotten:0,
+				promoters: []
 			}
 		}
 
@@ -130,16 +140,84 @@ function SignUp({match}){
 		})
 	}
 
-	const setupPromoter =(userSub)=>{
+	const handleName=(e)=>{
+		setName(e.target.value)
+		checkIfNameIsTaken(e.target.value)
+	}
+
+	const checkIfNameIsTaken =(name)=>{
+		checkAdvertisers(name);
+	}
+
+	const checkAdvertisers =async(name)=>{
+		var params = {
+			TableName: 'advertisers',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				":id": name
+			}
+		}
+
+		await docClient.query(params, (err, data)=>{
+			
+			if (err){
+				console.log(err)
+			} else{
+				if (data.Items.length > 0){
+					if (data.Items[0].uid === name){
+						setNameInUse(true)
+					}
+				}else{
+					console.log('no match')
+					checkPromoters(name)
+				}
+			}
+		})
+	}
+
+	const checkPromoters =async(name)=>{
+		var params = {
+			TableName: 'promoters',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
+			},
+			ExpressionAttributeValues: {
+				":id": name
+			}
+		}
+
+		await docClient.query(params, (err, data)=>{
+			
+			if (err){
+				console.log(err)
+			} else{
+				if (data.Items.length > 0){
+					if (data.Items[0].uid === name){
+						setNameInUse(true)
+					}
+				}else{
+					console.log('no match')
+					setNameInUse(false)
+				}
+			}
+		})
+	}
+
+	const setupPromoter =(name)=>{
 		var params = {
 			TableName: 'promoters',
 			Item: {
 				promotions: 0, // number of promotions
 				impressions: 0,
-				uid: userSub,
+				uid: name.toLowerCase(),
 				earnings:0,
 				promotedAds:[],
-				listOfPromotions:[]
+				listOfPromotions:[],
+				advertisersFollowed:[]
 			}
 		}
 
@@ -171,9 +249,10 @@ function SignUp({match}){
 				</div>
 				<form onSubmit={register} style={{padding:'1em'}}>
 					<div style={{}}>
-						<p style={{marginBottom:'-.07em'}}>{title}</p>
+						<p style={{marginBottom:'-.07em'}}>Username</p>
 						<input required type='text' style={{width:'90%', backgroundColor:'#F6F6F6', border:'none',
-							padding:'1em', fontSize:'1em'}} value={name} onChange={(e)=>{setName(e.target.value)}}/>
+							padding:'1em', fontSize:'1em'}} value={name} onChange={handleName}/>
+						{nameInUse && (<p style={{color:'red', fontSize:'.7em'}}>this username is not available</p>)}
 					</div>
 					<div style={{}}>
 						<p style={{marginBottom:'-.07em'}}>Email</p>

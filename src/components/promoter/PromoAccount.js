@@ -50,7 +50,7 @@ function PromoAccount() {
 			},
 			ExpressionAttributeValues: {
 				// item zero of user attributes is sub
-				":id": userAttributes[0].Value
+				":id": userAttributes[2].Value
 			}
 		}
 
@@ -105,7 +105,7 @@ function PromoAccount() {
 			</div>
 			<div className='promoaccount_adcontainer' style={{padding:'1em', margin:'1em', backgroundColor:'#FDF3F6', borderRadius:'.5em'}}
 				onClick={goToPromotionsPage}>
-					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}} >Ads promoted</p>
+					<p style={{fontSize:'1.1em', margin:0, fontWeight:'600'}} >Posts promoted</p>
 					<p style={{margin:0}}>{userData.promotions} <span style={{fontWeight:'100', marginLeft:'1em'}}>click to see</span></p>
 			</div>
 			<div style={{textAlign:'center'}}>

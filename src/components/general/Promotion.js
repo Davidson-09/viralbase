@@ -52,45 +52,14 @@ function Promotion({match}) {
 				if (ispresent){
 					window.location.replace(`https://${promotion.adlink}`);
 				} else{
-					var advertiser = getAdvertiser(promotion.adOwner);
-					if (advertiser.availableImpressions < 1){
-						deactivateAd(promotion.adOwner, promotion.adId)
-					} else{
-						// remove one available imression and add one impression gotten
-						decrementAvailableImpressions(promotion.adOwner)
-						// add one impression to the ad
-						addImpressionToAd(promotion.adOwner, promotion.adId)
-						// add one impression to the promotion and increase earnings
-						addImpressionToPromoterAndIncreaseEarnings(promotion.promoterId)
-						//increment the number of impressions for promotion
-						var params = {
-							TableName: 'promotions',
-							Key:{
-								"promotionId": promotion.promotionId,
-								"promoterId": promotion.promoterId
-							},
-							UpdateExpression: "set impressions = impressions + :val, addresses = list_append(addresses,:address)",
-							ExpressionAttributeValues:{
-								":val": 1,
-								":address": [ip]
-							},
-							ReturnValues:"UPDATED_NEW"
-						};
-						docClient.update(params, function(err, data) {
-							if (err) {
-								console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-							} else{
-								window.location.replace(`https://${promotion.adlink}`);
-							}
-						});
-					}
+					getAdvertiser(promotion.adOwner, promotion, ip);	
 				}
 				
 			}
 		});
 	}
 
-	const getAdvertiser =async (adOwner)=>{
+	const getAdvertiser =async (adOwner, promotion, ip)=>{
 		var params = {
 			TableName: 'advertisers',
 			KeyConditionExpression: "#uid = :id",
@@ -108,7 +77,38 @@ function Promotion({match}) {
 			if (err){
 				console.log(err)
 			} else{
-				return data.Items[0];
+				var advertiser = data.Items[0];
+				if (advertiser.availableImpressions < 1){
+					window.location.replace(`https://${promotion.adlink}`);
+				} else{
+					// remove one available imression and add one impression gotten
+					decrementAvailableImpressions(promotion.adOwner)
+					// add one impression to the ad
+					addImpressionToAd(promotion.adOwner, promotion.adId)
+					// add one impression to the promotion and increase earnings
+					addImpressionToPromoterAndIncreaseEarnings(promotion.promoterId)
+					//increment the number of impressions for promotion
+					var params = {
+						TableName: 'promotions',
+						Key:{
+							"promotionId": promotion.promotionId,
+							"promoterId": promotion.promoterId
+						},
+						UpdateExpression: "set impressions = impressions + :val, addresses = list_append(addresses,:address)",
+						ExpressionAttributeValues:{
+							":val": 1,
+							":address": [ip]
+						},
+						ReturnValues:"UPDATED_NEW"
+					};
+					docClient.update(params, function(err, data) {
+						if (err) {
+							console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+						} else{
+							window.location.replace(`https://${promotion.adlink}`);
+						}
+					});
+				}
 			}
 		})
 	}

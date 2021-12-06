@@ -27,13 +27,17 @@ import Widthdraw from './components/promoter/Widthdraw';
 import Promotion from './components/general/Promotion';
 import PageNotFound from './components/general/PageNotFound';
 import SearchPage from './components/promoter/SearchPage';
+import ChooseAdvertisers from './components/promoter/ChooseAdvertisers';
 import {UserProvider} from './contexts/UserContext';
+
+import AdvertisersList from './components/promoter/AdvertisersList';
 
 
 // NOTE FOR THE FUTURE: the advertiser part of this website has its pages in a pages folder
 // the promoter pages do not
 // because I was experimenting with a newly learned folder structure which, it turned out, 
 // I did not quite like but I had gone too far to make risky changes
+// inflencers were formerly advertisers
 
 function App() {
   return (
@@ -52,17 +56,17 @@ function App() {
 				
 			</Switch>
 
-			{/* advertiser links */}
+			{/* influencer links */}
 			<Switch>
-				<Route path='/advertiser/createad' exact component={AdCreation}/>
-				<Route path='/advertiser/purchaseimpressions' component={Proceed}/>
-				<Route path='/advertiser/addetails' component={AdDetails}/>
+				<Route path='/influencer/createpost' exact component={AdCreation}/>
+				<Route path='/influencer/purchaseimpressions' component={Proceed}/>
+				<Route path='/influencer/addetails' component={AdDetails}/>
 			</Switch>
 			<div className='ad_container' >
-				<Route path='/advertiser/dashboard' component={Header}/>
+				<Route path='/influencer/dashboard' component={Header}/>
 				<Switch>
-					<Route path='/advertiser/dashboard/Home' component={Home}/>
-					<Route path='/advertiser/dashboard/account' component={AdAccount}/>
+					<Route path='/influencer/dashboard/Home' component={Home}/>
+					<Route path='/influencer/dashboard/account' component={AdAccount}/>
 				</Switch>
 			</div>
 
@@ -70,10 +74,10 @@ function App() {
 
 			<Route path='/promoter/front' component={PromoHeader}/>
 			<Switch>
-				<Route path='/promoter/front/home' component={ListOfAds}/>
+				<Route path='/promoter/front/home' component={AdvertisersList}/>
 				<Route path='/promoter/front/account' component={PromoAccount}/>
 				<Route path='/promoter/front/promotions' component={Promotions}/>
-				
+				<Route path='/promoter/front/adlist/:advertiser' component={ListOfAds}/>
 			</Switch>
 			<Route path='/promoter/addetails/:ad' component={AdPage}/>
 			<Route path='/promoter/promotionDetails' component={PromotionDetails}/>

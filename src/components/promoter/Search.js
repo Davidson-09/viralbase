@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
-
-import AdCard from './AdCard'
 import SpinnerDiv from '../general/SpinnerDiv'
+import AdvertiserCardForSearch from './AdvertiserCardForSearch'
 
 import './listOfAds.css'
 
@@ -10,54 +9,30 @@ import * as AWS from 'aws-sdk';
 
 function Search({searchterm}) {
 
-	const [ads, setAds] = useState();
+	const [advertisers, setAdvertisers] = useState();
 
 	const [progressDisplay, setProgressDisplay] = useState('none')
 	const [status, setStatus] = useState('searching...');
 	const [empty, setEmpty] = useState(true)
 	const docClient = new AWS.DynamoDB.DocumentClient()
+	
 
 	useEffect(()=>{
-		getAds()
-		
+		getAdvertisers()
 	},[searchterm])
 
-
-	// const getAds = async ()=>{
-	// 	setProgressDisplay('block')
-	// 	setAds([])
-	// 	const q = query(collection(db, "ads"), where( 'name', '==', searchterm), where("active", "==", true));
-	// 	console.log(searchterm)
-	// 	const querySnapshot = await getDocs(q);
-	// 	let adlist = [];
-	// 	querySnapshot.forEach((doc) => {
-	// 		// doc.data() is never undefined for query doc snapshots
-	// 		let ad = {id:doc.id, data:doc.data()}
-	// 		adlist.push(ad)
-	// 	  });
-		  
-	// 	  if (adlist.length > 0){
-	// 		setAds(adlist);
-	// 		setEmpty(false);
-	// 	  } else {
-	// 		  setStatus('there are no ads that match this search')
-	// 		  setEmpty(true);
-	// 	  }
-	// 	  setProgressDisplay('none')
-	// }
-
-	const getAds =()=>{
+	const getAdvertisers =()=>{
 		setProgressDisplay('block')
 		var params = {
-			"TableName": "ads",
-			"IndexName": "active-index",
-			"KeyConditionExpression": "active = :a and adname = :n",
-			"ExpressionAttributeValues": {
-				":a": "active",
-				":n": searchterm
+			TableName: 'advertisers',
+			KeyConditionExpression: "#uid = :id",
+			ExpressionAttributeNames:{
+				"#uid": "uid"
 			},
-			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, adthumbnail",
-			"ScanIndexForward": false
+			ExpressionAttributeValues: {
+				// item zero of user attributes is sub
+				":id": searchterm.toLowerCase()
+			}
 		}
 
 		docClient.query(params, function(err, data) {
@@ -67,10 +42,10 @@ function Search({searchterm}) {
 			} else {
 				console.log(data)
 				if (data.Items.length === 0){
-					setStatus('there are no ads for this search')
+					setStatus('No influencer goes by this user name')
 					setEmpty(true)
 				}
-				setAds(data.Items)
+				setAdvertisers(data.Items)
 				setProgressDisplay('none')
 				setEmpty(false)
 				
@@ -81,13 +56,14 @@ function Search({searchterm}) {
 	return (
 		<div>
 			<SpinnerDiv show={progressDisplay} />
-			<h4 className='title' style={{ textAlign:'center'}}>Available ads</h4>
+			{/* <h4 className='title' style={{ textAlign:'center'}}>Available ads</h4> */}
 			<div style={{display:'flex', justifyContent:'center' }}>
 			<div className='list_of_ads' style={{display:'grid', gridTemplateColumns:'auto auto'}}>
-				{ads && ads.map(ad=>(
-					<AdCard key={ad.id} ad={ad}/>
+				{advertisers && advertisers.map(advertiser=>(
+					<AdvertiserCardForSearch key={advertiser.uid} advertiser={advertiser}/>
 				))}
-				{empty && <p>{status}</p>}
+				
+				{/* {empty && <p>{status}</p>} */}
 			</div>
 			</div>
 		</div>

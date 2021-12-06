@@ -59,7 +59,7 @@ function PromotionDetails() {
 			"ExpressionAttributeValues": {
 				":a": promo.adId
 			},
-			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, link",
+			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, link, adDescription",
 			"ScanIndexForward": false
 		}
 
@@ -107,7 +107,7 @@ function PromotionDetails() {
 	}
 
 	const copyDescription =()=>{
-		navigator.clipboard.writeText(ad.data.description)
+		navigator.clipboard.writeText(ad.adDescription)
 		setAlertMessage('description copied');
 		setAlertSeverity('success')
 		setDisplayAlert(true)
@@ -130,6 +130,13 @@ function PromotionDetails() {
 						<div style={{}}>
 							<div >
 								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{ad.adname}</p>
+							</div>
+							<div>
+								<p style={{maxHeight:'10em', overflowY:'auto'}}>
+									{ad.adDescription}
+								</p>
+								<button style={{marginTop:"1em", border:'none', width:"10em",
+								height:'3em', fontSize:'1em', borderRadius:'.5em'}} onClick={copyDescription}>copy description</button>
 							</div>
 							<button style={{marginTop:"1em", border:'none', width:"10em",
 								height:'3em', fontSize:'1em', borderRadius:'.5em'}} onClick={downloadMedia}>download media file</button>

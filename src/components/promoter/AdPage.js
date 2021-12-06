@@ -47,7 +47,7 @@ function AdPage({match}) {
 			"ExpressionAttributeValues": {
 				":a": match.params.ad
 			},
-			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, link",
+			"ProjectionExpression": "adId, ownerId, adname, mediaFile, adtype, link, adDescription",
 			"ScanIndexForward": false
 		}
 
@@ -145,12 +145,12 @@ function AdPage({match}) {
 				setDisplayAlert(true)
 			} else{
 				// set up a promotion object in database
-				const promoId = user[0].Value + Math.random()
+				const promoId = user[2].Value + Math.random()
 				var params = {
 				TableName: 'promotions',
 					Item: {
 						promotionId: promoId,
-						promoterId: user[0].Value,
+						promoterId: user[2].Value,
 						adId: ad.adId,
 						adOwner: ad.ownerId,
 						addresses: [],
@@ -175,7 +175,7 @@ function AdPage({match}) {
 						var params = {
 							TableName: "promoters",
 							Key: {
-							   uid: userAttributes[0].Value
+							   uid: userAttributes[2].Value
 							},
 							UpdateExpression: "SET promotedAds = list_append(promotedAds,:ad), listOfPromotions = list_append(listOfPromotions,:promotion), promotions = promotions + :val ",
 							ExpressionAttributeValues: {
@@ -216,7 +216,7 @@ function AdPage({match}) {
 			},
 			ExpressionAttributeValues: {
 				// item zero of user attributes is sub
-				":id": userAttributes[0].Value
+				":id": userAttributes[2].Value
 			}
 		}
 
@@ -238,6 +238,13 @@ function AdPage({match}) {
 		setDisplayAlert(true)
 	}
 
+	const copyDescription =()=>{
+		navigator.clipboard.writeText(ad.adDescription)
+		setAlertMessage('description copied');
+		setAlertSeverity('success')
+		setDisplayAlert(true)
+	}
+
 	return (
 		<div style={{position:'fixed',backgroundColor:'#F2F2F2', Height:"100vh", width:'100%'}}>
 			<NewAlert displayAlert={displayAlert} message={alertMessage} severity={alertSeverity} setDisplayAlert={setDisplayAlert} />
@@ -255,6 +262,13 @@ function AdPage({match}) {
 						<div style={{}}>
 							<div >
 								<p style={{fontSize:"1.3em", marginBottom:"-.5em", fontWeight:"bold"}}>{ad.adname}</p>
+							</div>
+							<div>
+								<p style={{maxHeight:'10em', overflowY:'auto'}}>
+									{ad.adDescription}
+								</p>
+								<button style={{marginTop:"1em", border:'none', width:"10em",
+								height:'3em', fontSize:'1em', borderRadius:'.5em'}} onClick={copyDescription}>copy description</button>
 							</div>
 							<button style={{marginTop:"1em", border:'none', width:"10em",
 								height:'3em', fontSize:'1em', borderRadius:'.5em'}} onClick={downloadMedia}>download media file</button>

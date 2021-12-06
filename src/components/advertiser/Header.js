@@ -51,13 +51,13 @@ function Header() {
 				</div>
 				<div className="ad_menu" style={{display:menuVisibility}}>
 					<CloseRoundedIcon className='close-icon' style={{marginLeft:'5em', color:'var(--blueprimary)'}} onClick={hideMenu}/>
-					<Link to='/advertiser/dashboard/Home' style={{textDecoration:'none', color:'black'}}>
+					<Link to='/influencer/dashboard/Home' style={{textDecoration:'none', color:'black'}}>
 						<div className="ad_menu_item">
 							<HomeRoundedIcon className="ad_menu_item_icon"/>
 							<p className="ad_menu_item_text">Home</p>
 						</div>
 					</Link>
-					<Link to='/advertiser/dashboard/account' style={{textDecoration:'none', color:'black'}}>
+					<Link to='/influencer/dashboard/account' style={{textDecoration:'none', color:'black'}}>
 					<div className="ad_menu_item">
 						<PersonRoundedIcon className="ad_menu_item_icon"/>
 						<p className="ad_menu_item_text">account</p>

@@ -53,7 +53,7 @@ function AdCard({ad}){
 
 	const toDetails =()=>{
 		localStorage.setItem('currentAd', JSON.stringify(ad));
-		history.push(`/advertiser/addetails`)
+		history.push(`/influencer/addetails`)
 	}
 
 	return(

@@ -178,6 +178,11 @@ function AdDetails({match}) {
 							<p style={{marginTop:'1.5em', color:modeColor}}>{mode}</p>
 						</div>
 						<div>
+							<p style={{maxHeight:'10em', overflowY:'auto'}}>
+								{currentAd.adDescription}
+							</p>
+						</div>
+						<div>
 							<p style={{marginBottom:'-1.5em'}}>Link:</p>
 							<p style={{ width:'70%', overflow:'auto', color:'var(--blueprimary)'}}>{currentAd.link}</p>
 						</div>

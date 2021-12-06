@@ -69,7 +69,7 @@ function Proceed() {
 				setAlertSeverity('warning');
 				setProgressDisplay(true);
 			} else{
-				history.push('/advertiser/dashboard/Home');
+				history.push('/influencer/dashboard/Home');
 			}
 		});
 	}

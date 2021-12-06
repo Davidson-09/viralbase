@@ -51,13 +51,13 @@ function Landing() {
 				marginBottom:'3em'}}>
 				<div>
 					<h1 className='landing_text' style={{textAlign:'center'}}>
-						Promote your hustle <br/>
-						<span style={{color:'var(--blueprimary)'}}> without breaking the bank</span>
+						Turn your followers into <br/>
+						<span style={{color:'var(--blueprimary)'}}> an army of promoters</span>
 					</h1>
-					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> promote their goods, services, music,<br/> movies, events and so much more.</p>
+					<p className='landing_text' style={{textAlign:'center', marginTop:'-.3em'}}>viralbase helps people and businesses <br/> gain adequate exposure <br/>by effectively utilizing their online community</p>
 					<div className='landing_cta_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
 					<button onClick={toAdSignUp} style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
-					 border:'none', color:'white', fontWeight:'bold', fontSize:'1em'}}>create free advertiser account</button>
+					 border:'none', color:'white', fontWeight:'bold', fontSize:'1em'}}>create free influencer account</button>
 						</div>
 				</div>
 				<div className='landing_hero_img' style={{marginLeft:'auto', marginRight:'auto'}}>
@@ -69,9 +69,9 @@ function Landing() {
 
 			<div className='landing_promoter_hero'>
 				<div>
-				<h1 className='landing_promoter_text' style={{textAlign:'center'}}>Promote products and <br/> <span style={{color:'var(--blueprimary)'}}>make easy money</span></h1>
-				<p className='landing_promoter_text' style={{textAlign:'center', marginTop:'-.3em', padding:'.5em'}}>viralbase provides one of the easiest ways to make money online,<br/>
-					you make money by sharing promotion links<br/> and getting people to interact with them</p>
+				<h1 className='landing_promoter_text' style={{textAlign:'center'}}>Promote post and <br/> <span style={{color:'var(--blueprimary)'}}>make easy money</span></h1>
+				<p className='landing_promoter_text' style={{textAlign:'center', marginTop:'-.3em', padding:'.5em'}}>Follow the influencers you love,<br/>
+					share their posts and promotion links<br/> and get paid</p>
 					<div className='landing_promoter_btn' style={{marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
 					<button onClick={toPromoSignUp} style={{padding:'1em', borderRadius:'.6em', backgroundColor:'var(--blueprimary)',
 					 border:'none', color:'white', fontWeight:'bold', fontSize:'1em'}}>become a promoter</button>

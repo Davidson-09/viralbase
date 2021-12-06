@@ -47,7 +47,7 @@ function Login() {
 						localStorage.setItem('userAttributes', JSON.stringify(data));
 						localStorage.setItem('userCredentials', JSON.stringify({email, password, role: data[6].Value}));
 						if ( data[6].Value === 'advertiser'){
-							history.push('/advertiser/dashboard/Home')
+							history.push('/influencer/dashboard/Home')
 						} else{
 							// the user is a promoter
 							history.push('/promoter/front/home')
