@@ -1,5 +1,5 @@
 # Demo
-to see this react app live go to myviralbase.com
+to see this react app live go to viralbase.netlify.app
 
 # Getting Started with Create React App
 
