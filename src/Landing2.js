@@ -9,6 +9,7 @@ import { useHistory} from 'react-router-dom';
 
 function Landing2() {
 
+	// this is the second landing page for music
 	const history = useHistory();
 
 	const toLogin =()=>{
