@@ -37,7 +37,7 @@ import AdvertisersList from './components/promoter/AdvertisersList';
 // the promoter pages do not
 // because I was experimenting with a newly learned folder structure which, it turned out, 
 // I did not quite like but I had gone too far to make risky changes
-// inflencers were formerly advertisers
+// influencers were formerly advertisers
 
 function App() {
   return (
